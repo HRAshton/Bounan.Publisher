@@ -1,0 +1,11 @@
+﻿{
+    "errorAlarmEmail": "",
+    "loanApiToken": "",
+    "telegramToken": "",
+    "telegramSourceChannelId": "",
+    "telegramIntermediateChannelId": "",
+    "telegramTargetGroupId": "",
+    "videoDownloadedTopicArn": "",
+    "sceneRecognisedTopicArn": "",
+    "DUMMY": ""
+}
