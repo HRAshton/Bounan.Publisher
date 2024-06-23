@@ -7,7 +7,7 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import * as sns from "aws-cdk-lib/aws-sns";
 import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
 import { Construct } from 'constructs';
-import { Duration, Stack as AwsStack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, Stack as AwsStack, StackProps } from 'aws-cdk-lib';
 import { LlrtFunction } from "cdk-lambda-llrt";
 import { config } from "./config";
 
@@ -27,6 +27,9 @@ export class Stack extends AwsStack {
         const scenesLambda = this.createScenesLambda(table, errorsLogGroup);
         table.grantReadWriteData(scenesLambda);
         this.AttachRecognisedSnsEvent(scenesLambda);
+
+        this.out('config', config);
+        this.out('tableName', table.tableName);
     }
 
     private createDatabase(): dynamodb.Table {
@@ -99,5 +102,9 @@ export class Stack extends AwsStack {
             TELEGRAM_INTERMEDIATE_CHANNEL_ID: config.telegramIntermediateChannelId,
             TELEGRAM_TARGET_GROUP_ID: config.telegramTargetGroupId,
         };
+    }
+
+    private out(name: string, value: any): void {
+        new CfnOutput(this, name, { value: JSON.stringify(value) });
     }
 }

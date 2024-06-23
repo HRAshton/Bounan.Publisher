@@ -1,6 +1,5 @@
 ﻿{
     "errorAlarmEmail": "",
-    "loanApiToken": "",
     "telegramToken": "",
     "telegramSourceChannelId": "",
     "telegramIntermediateChannelId": "",
