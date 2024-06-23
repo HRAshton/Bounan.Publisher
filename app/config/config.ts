@@ -18,9 +18,6 @@ export interface Config {
     database: {
         tableName: string;
     };
-    loanApi: {
-        token: string;
-    };
 }
 
 export const config: Config = {
@@ -32,8 +29,5 @@ export const config: Config = {
     },
     database: {
         tableName: getEnv("DATABASE_TABLE_NAME"),
-    },
-    loanApi: {
-        token: getEnv("LOAN_API_TOKEN"),
     },
 }
