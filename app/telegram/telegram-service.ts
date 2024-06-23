@@ -86,8 +86,12 @@ export const publishAnime = async (
         name: createTextForTopicName(animeInfo, publishingRequest),
     });
     const threadId = createdTopic.result.message_thread_id;
+    if (!createdTopic.ok) {
+        throw new Error(JSON.stringify(createdTopic));
+    }
 
-    const firstPostText = createTextForHeaderPost(animeInfo, publishingRequest);
+    // Telegram has a limit of 1024 characters for the caption
+    const firstPostText = createTextForHeaderPost(animeInfo, publishingRequest).substring(0, 1024);
     const firstPost = await sendPhoto({
         chat_id: config.telegram.targetGroupId,
         photo: SHIKIMORI_BASE_URL + animeInfo.image.original,
@@ -95,6 +99,9 @@ export const publishAnime = async (
         message_thread_id: threadId,
         parse_mode: 'HTML',
     });
+    if (!firstPost.ok) {
+        throw new Error(JSON.stringify(firstPost));
+    }
 
     const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, threadId);
 
