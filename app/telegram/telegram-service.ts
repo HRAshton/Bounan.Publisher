@@ -10,11 +10,9 @@ import {
     createForumTopic,
     copyMessages,
     editMessageCaption,
-    deleteMessage,
     deleteMessages,
-    forwardMessage,
     sendPhoto,
-    sendVideo,
+    copyMessage,
 } from "telegram-bot-api-lightweight-client/src/client";
 import { SHIKIMORI_BASE_URL } from "../shikimori-client/shikimori-client";
 import { PublishedAnimeEntity } from "../database/entities/published-anime-entity";
@@ -53,43 +51,16 @@ const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<
     }));
 }
 
-const getFileIdFromMessage = async (messageId: number): Promise<string> => {
-    const message = await forwardMessage({
-        chat_id: config.telegram.intermediateChannelId,
-        from_chat_id: config.telegram.sourceChannelId,
-        message_id: messageId,
-    });
-
-    if (!message.result) {
-        throw new Error(JSON.stringify(message));
-    }
-
-    await deleteMessage({
-        chat_id: config.telegram.intermediateChannelId,
-        message_id: message.result.message_id,
-    });
-
-    if (!message.result.video) {
-        throw new Error('Message is not a video');
-    }
-
-    return message.result.video.file_id;
-}
-
 const sendSingleEpisodeInternal = async (
     publishingRequest: VideoDownloadedNotification,
     animeInfo: ShikiAnimeInfo,
     threadId: number,
 ): Promise<EpisodeMessageInfo> => {
-    const fileId = await getFileIdFromMessage(publishingRequest.messageId);
-    if (!fileId) {
-        throw new Error('File id is not found');
-    }
-
     const caption = createTextForEpisodePost(animeInfo, publishingRequest);
-    const episodeMessage = await sendVideo({
+    const episodeMessage = await copyMessage({
         chat_id: config.telegram.targetGroupId,
-        video: fileId,
+        from_chat_id: config.telegram.sourceChannelId,
+        message_id: publishingRequest.messageId,
         caption,
         message_thread_id: threadId,
         parse_mode: 'HTML',

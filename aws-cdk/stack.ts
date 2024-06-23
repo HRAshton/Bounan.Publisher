@@ -101,7 +101,6 @@ export class Stack extends AwsStack {
             DATABASE_TABLE_NAME: table.tableName,
             TELEGRAM_TOKEN: config.telegramToken,
             TELEGRAM_SOURCE_CHANNEL_ID: config.telegramSourceChannelId,
-            TELEGRAM_INTERMEDIATE_CHANNEL_ID: config.telegramIntermediateChannelId,
             TELEGRAM_TARGET_GROUP_ID: config.telegramTargetGroupId,
             RETRIES_MAX: config.retriesMax,
             RETRIES_DELAY_MS: config.retriesDelayMs,

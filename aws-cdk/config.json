@@ -2,7 +2,6 @@
     "errorAlarmEmail": "",
     "telegramToken": "",
     "telegramSourceChannelId": "",
-    "telegramIntermediateChannelId": "",
     "telegramTargetGroupId": "",
     "videoDownloadedTopicArn": "",
     "sceneRecognisedTopicArn": "",

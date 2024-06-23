@@ -12,7 +12,6 @@ export interface Config {
     telegram: {
         token: string;
         sourceChannelId: string;
-        intermediateChannelId: string;
         targetGroupId: string;
     };
     database: {
@@ -28,7 +27,6 @@ export const config: Config = {
     telegram: {
         token: getEnv("TELEGRAM_TOKEN"),
         sourceChannelId: getEnv("TELEGRAM_SOURCE_CHANNEL_ID"),
-        intermediateChannelId: getEnv("TELEGRAM_INTERMEDIATE_CHANNEL_ID"),
         targetGroupId: getEnv("TELEGRAM_TARGET_GROUP_ID"),
     },
     database: {
