@@ -17,7 +17,7 @@ export class Stack extends AwsStack {
 
         const table = this.createDatabase();
 
-        const errorsLogGroup = this.createErrorsLogGroup();
+        const errorsLogGroup = this.createLogGroup();
         this.SetErrorsAlarm(errorsLogGroup);
 
         const lambdaVideo = this.createVideoLambda(table, errorsLogGroup);
@@ -38,8 +38,8 @@ export class Stack extends AwsStack {
         });
     }
 
-    private createErrorsLogGroup(): logs.LogGroup {
-        return new logs.LogGroup(this, 'ErrorsLogGroup', {
+    private createLogGroup(): logs.LogGroup {
+        return new logs.LogGroup(this, 'LogGroup', {
             retention: logs.RetentionDays.ONE_WEEK,
         });
     }
@@ -72,6 +72,7 @@ export class Stack extends AwsStack {
             handler: 'videoHandler',
             logGroup: errorsLogGroup,
             environment: this.getEnvVars(table),
+            timeout: Duration.seconds(30),
         });
     }
 
@@ -81,6 +82,7 @@ export class Stack extends AwsStack {
             handler: 'scenesHandler',
             logGroup: errorsLogGroup,
             environment: this.getEnvVars(table),
+            timeout: Duration.seconds(30),
         });
     }
 
