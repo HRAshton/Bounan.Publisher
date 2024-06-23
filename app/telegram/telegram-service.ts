@@ -61,7 +61,7 @@ const getFileIdFromMessage = async (messageId: number): Promise<string> => {
     });
 
     if (!message.result) {
-        throw new Error(message.toString());
+        throw new Error(JSON.stringify(message));
     }
 
     await deleteMessage({
