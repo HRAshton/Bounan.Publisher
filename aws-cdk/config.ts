@@ -8,6 +8,8 @@ interface Config {
     telegramTargetGroupId: string;
     videoDownloadedTopicArn: string;
     sceneRecognisedTopicArn: string;
+    retriesMax: string;
+    retriesDelayMs: string;
 }
 
 export const config: Config = configFile;
@@ -35,4 +37,10 @@ if (!config.videoDownloadedTopicArn) {
 }
 if (!config.sceneRecognisedTopicArn) {
     throw new Error('sceneRecognisedTopicArn is required');
+}
+if (!config.retriesMax) {
+    throw new Error('retriesMax is required');
+}
+if (!config.retriesDelayMs) {
+    throw new Error('retriesDelayMs is required');
 }

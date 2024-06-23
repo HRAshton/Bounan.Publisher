@@ -6,5 +6,7 @@
     "telegramTargetGroupId": "",
     "videoDownloadedTopicArn": "",
     "sceneRecognisedTopicArn": "",
+    "retriesMax": "3",
+    "retriesDelayMs": "2000",
     "DUMMY": ""
 }

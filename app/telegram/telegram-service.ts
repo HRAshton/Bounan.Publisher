@@ -95,6 +95,10 @@ const sendSingleEpisodeInternal = async (
         parse_mode: 'HTML',
     });
 
+    if (!episodeMessage.ok) {
+        throw new Error(JSON.stringify(episodeMessage));
+    }
+
     return {
         episode: publishingRequest.episode,
         messageId: episodeMessage.result.message_id,

@@ -18,6 +18,10 @@ export interface Config {
     database: {
         tableName: string;
     };
+    retries: {
+        max: number;
+        delayMs: number;
+    };
 }
 
 export const config: Config = {
@@ -30,4 +34,8 @@ export const config: Config = {
     database: {
         tableName: getEnv("DATABASE_TABLE_NAME"),
     },
+    retries: {
+        max: parseInt(getEnv("RETRIES_MAX")),
+        delayMs: parseInt(getEnv("RETRIES_DELAY_MS")),
+    }
 }

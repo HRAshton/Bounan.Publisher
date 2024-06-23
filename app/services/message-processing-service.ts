@@ -1,25 +1,34 @@
 ﻿import { VideoDownloadedNotification } from "../models/notifications/video-downloaded-notification";
-import { getPublishedAnime, insertAnime, upsertEpisodes } from "../database/repository";
+import {
+    getOrRegisterAnimeAndLock,
+    setHeaderAndFirstEpisodeUnlock, unlock,
+    upsertEpisodesAndUnlock,
+} from "../database/repository";
 import { PublishedAnimeEntity } from "../database/entities/published-anime-entity";
 import { publishAnime, publishEpisode } from "../telegram/telegram-service";
 import { getAnimeInfo } from "../shikimori-client/shikimori-client";
+import { config } from "../config/config";
+import { AnimeLockedError } from "../errors/anime-locked-error";
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 
-const addAnime = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+// Creates a new topic for the anime, publishes the header message and the first episode
+const createTopic = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
     const animeInfo = await getAnimeInfo(publishingRequest.myAnimeListId);
     console.log("Got anime info");
 
-    const messageInfo = await publishAnime(publishingRequest, animeInfo);
-    console.log("Published anime with message: ", messageInfo);
+    const publishingResult = await publishAnime(publishingRequest, animeInfo);
+    console.log("Published anime with message: ", publishingResult);
 
-    await insertAnime(
+    await setHeaderAndFirstEpisodeUnlock(
         publishingRequest,
-        messageInfo.threadId,
-        messageInfo.headerMessageInfo,
+        publishingResult.threadId,
+        publishingResult.headerMessageInfo,
         publishingRequest.episode,
-        messageInfo.episodeMessageInfo);
-    console.log("Anime added to database");
+        publishingResult.episodeMessageInfo);
+    console.log(`Anime topic created with message: ${publishingResult}`);
 };
 
+// Publishes a new episode for the anime
 const addEpisode = async (
     publishingRequest: VideoDownloadedNotification,
     publishedAnime: PublishedAnimeEntity,
@@ -31,23 +40,50 @@ const addEpisode = async (
     console.log("Published episode with message: ", messageInfos);
 
     const newEpisodes = Object.fromEntries(messageInfos.map(x => [x.episode, x]));
-    await upsertEpisodes(publishedAnime, newEpisodes);
+    await upsertEpisodesAndUnlock(publishedAnime, newEpisodes);
     console.log("Anime updated in database");
 };
 
-export const processNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
-    const anime = await getPublishedAnime(publishingRequest);
+const tryProcessNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+    const anime = await getOrRegisterAnimeAndLock(publishingRequest);
 
-    const animeExists = !!anime;
-    const episodeExists = animeExists && Object.keys(anime.episodes).map(Number).includes(publishingRequest.episode);
+    const topicExists = 'threadId' in anime;
+    const episodeExists = topicExists && !!anime.episodes?.[publishingRequest.episode];
 
     if (episodeExists) {
         console.log("Episode already published, skipping");
-    } else if (!animeExists) {
-        console.log("Anime not found in database, adding");
-        await addAnime(publishingRequest);
+        await unlock(anime);
+    } else if (!topicExists) {
+        console.log("The topic was not found in the database, adding");
+        await createTopic(publishingRequest);
     } else {
-        console.log("Anime found in database, updating");
+        console.log("The topic was found in the database, adding episode");
         await addEpisode(publishingRequest, anime);
     }
+};
+
+export const processNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+    let totalRetries = 0;
+    while (totalRetries < config.retries.max) {
+        try {
+            return await tryProcessNewEpisode(publishingRequest);
+        } catch (e: unknown) {
+            if (!(e instanceof AnimeLockedError || e instanceof ConditionalCheckFailedException)) {
+                await unlock(publishingRequest);
+            }
+
+            if (totalRetries === config.retries.max - 1) {
+                console.error("Failed to process anime, no retries left", e);
+                throw e;
+            }
+
+            console.warn("Failed to process anime, retrying", e);
+            totalRetries++;
+
+            const timeout = totalRetries * config.retries.delayMs + Math.random() * 1000;
+            await new Promise(resolve => setTimeout(resolve, timeout));
+        }
+    }
+
+    throw new Error("Unexpected error");
 };

@@ -1,8 +1,8 @@
 ﻿import { EpisodeMessageInfo, HeaderMessageInfo } from "./message-info";
 
 export interface PublishingResult {
-    episode: number;
     threadId: number;
     headerMessageInfo: HeaderMessageInfo;
+    episode: number;
     episodeMessageInfo: EpisodeMessageInfo;
 }
