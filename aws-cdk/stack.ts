@@ -45,7 +45,7 @@ export class Stack extends AwsStack {
         const metricFilter = logGroup.addMetricFilter('ErrorMetric', {
             metricNamespace: this.stackName,
             metricName: 'ErrorCount',
-            filterPattern: { logPatternString: 'ERROR' },  // TODO: check this
+            filterPattern: { logPatternString: 'ERROR' },
             metricValue: '1',
         });
 
@@ -68,14 +68,7 @@ export class Stack extends AwsStack {
             entry: 'app/video-handler.ts',
             handler: 'videoHandler',
             logGroup: errorsLogGroup,
-            environment: {
-                LOAN_API_TOKEN: config.loanApiToken,
-                DATABASE_TABLE_NAME: table.tableName,
-                TELEGRAM_TOKEN: config.telegramToken,
-                TELEGRAM_SOURCE_CHANNEL_ID: config.telegramSourceChannelId,
-                TELEGRAM_INTERMEDIATE_CHANNEL_ID: config.telegramIntermediateChannelId,
-                TELEGRAM_TARGET_GROUP_ID: config.telegramTargetGroupId,
-            },
+            environment: this.getEnvVars(table),
         });
     }
 
@@ -84,14 +77,7 @@ export class Stack extends AwsStack {
             entry: 'app/scenes-handler.ts',
             handler: 'scenesHandler',
             logGroup: errorsLogGroup,
-            environment: {
-                LOAN_API_TOKEN: config.loanApiToken,
-                DATABASE_TABLE_NAME: table.tableName,
-                TELEGRAM_TOKEN: config.telegramToken,
-                TELEGRAM_SOURCE_CHANNEL_ID: config.telegramSourceChannelId,
-                TELEGRAM_INTERMEDIATE_CHANNEL_ID: config.telegramIntermediateChannelId,
-                TELEGRAM_TARGET_GROUP_ID: config.telegramTargetGroupId,
-            },
+            environment: this.getEnvVars(table),
         });
     }
 
@@ -103,5 +89,15 @@ export class Stack extends AwsStack {
     private AttachRecognisedSnsEvent(lambda: lambda.Function): void {
         const topic = sns.Topic.fromTopicArn(this, 'SceneRecognisedTopic', config.sceneRecognisedTopicArn);
         lambda.addEventSource(new lambdaEventSources.SnsEventSource(topic));  // TODO: Filter
+    }
+
+    private getEnvVars(table: dynamodb.Table): { [key: string]: string } {
+        return {
+            DATABASE_TABLE_NAME: table.tableName,
+            TELEGRAM_TOKEN: config.telegramToken,
+            TELEGRAM_SOURCE_CHANNEL_ID: config.telegramSourceChannelId,
+            TELEGRAM_INTERMEDIATE_CHANNEL_ID: config.telegramIntermediateChannelId,
+            TELEGRAM_TARGET_GROUP_ID: config.telegramTargetGroupId,
+        };
     }
 }

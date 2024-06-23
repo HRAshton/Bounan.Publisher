@@ -40,7 +40,7 @@ export const fromJson = (jsonText: string): SceneRecognisedNotification => {
         }
 
         for (const scene of Object.values(item.scenes)) {
-            if (!scene || !Number.isInteger(scene.start) || !Number.isInteger(scene.end)) {
+            if (scene && (!Number.isInteger(scene.start) || !Number.isInteger(scene.end))) {
                 throw new Error("Invalid Scene: " + item);
             }
         }

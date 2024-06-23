@@ -2,7 +2,6 @@
 
 interface Config {
     errorAlarmEmail: string;
-    loanApiToken: string;
     telegramToken: string;
     telegramSourceChannelId: string;
     telegramIntermediateChannelId: string;
@@ -15,10 +14,6 @@ export const config: Config = configFile;
 
 if (!config.errorAlarmEmail) {
     throw new Error('errorAlarmEmail is required');
-}
-
-if (!config.loanApiToken) {
-    throw new Error('loanApiToken is required');
 }
 
 if (!config.telegramToken) {

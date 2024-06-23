@@ -175,7 +175,7 @@ export const updateEpisodeMessages = async (
             parse_mode: 'HTML',
         });
         if (!result.ok) {
-            console.error(`Failed to update caption: ${result}`);
+            console.error('Failed to update caption', result);
         }
     }
 
