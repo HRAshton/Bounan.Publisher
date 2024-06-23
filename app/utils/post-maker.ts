@@ -7,6 +7,19 @@ const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
 }
 
+export const createTextForTopicName = (
+    animeInfo: ShikiAnimeInfo,
+    publishingRequest: VideoDownloadedNotification,
+): string => {
+    return [
+        animeInfo.russian || animeInfo.name,
+        publishingRequest.dub,
+        animeInfo.aired_on?.substring(0, 4)
+    ]
+        .filter(Boolean)
+        .join(' | ');
+}
+
 export const createTextForHeaderPost = (
     animeInfo: ShikiAnimeInfo,
     publishingRequest: VideoDownloadedNotification,

@@ -4,7 +4,7 @@ import { config } from "../config/config";
 import { hashCode } from "../utils/hash";
 import { PublishingResult } from "./models/publishing-result";
 import { EpisodeMessageInfo } from "./models/message-info";
-import { createTextForEpisodePost, createTextForHeaderPost } from "../utils/post-maker";
+import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from "../utils/post-maker";
 import { ShikiAnimeInfo } from "../shikimori-client/shiki-anime-info";
 import {
     createForumTopic,
@@ -108,13 +108,7 @@ export const publishAnime = async (
 ): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
         chat_id: config.telegram.targetGroupId,
-        name: [
-            animeInfo.russian || animeInfo.name,
-            publishingRequest.dub,
-            animeInfo.aired_on?.substring(0, 4)
-        ]
-            .filter(Boolean)
-            .join(' | '),
+        name: createTextForTopicName(animeInfo, publishingRequest),
     });
     const threadId = createdTopic.result.message_thread_id;
 
