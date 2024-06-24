@@ -11,6 +11,6 @@
     },
     "dependencies": {
         "aws-lambda": "^1.0.7",
-        "telegram-bot-api-lightweight-client": "^7.5.0"
+        "telegram-bot-api-lightweight-client": "^7.5.1"
     }
 }
