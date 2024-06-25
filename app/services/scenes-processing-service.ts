@@ -64,8 +64,9 @@ export const processScenes = async (updatingRequests: SceneRecognisedNotificatio
     }
 
     const groupedRequestsItems = nonEmptyRequestItems.reduce((acc, item) => {
-        acc[item.myAnimeListId] = acc[`${item.myAnimeListId}_${item.dub}`] || [];
-        acc[item.myAnimeListId].push(item);
+        const key = `${item.myAnimeListId}_${item.dub}`;
+        acc[key] = acc[key] || [];
+        acc[key].push(item);
         return acc;
     }, {} as Record<string, SceneRecognisedNotificationItem[]>);
     console.log("Grouped requests: ", groupedRequestsItems);
