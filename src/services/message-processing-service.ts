@@ -12,7 +12,7 @@ import { AnimeLockedError } from "../errors/anime-locked-error";
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
 
 // Creates a new topic for the anime, publishes the header message and the first episode
-const createTopic = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+const createTopic = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
     const animeInfo = await getAnimeInfo(publishingRequest.myAnimeListId);
     console.log("Got anime info");
 
@@ -30,7 +30,7 @@ const createTopic = async (publishingRequest: VideoDownloadedNotification): Prom
 
 // Publishes a new episode for the anime
 const addEpisode = async (
-    publishingRequest: VideoDownloadedNotification,
+    publishingRequest: Required<VideoDownloadedNotification>,
     publishedAnime: PublishedAnimeEntity,
 ): Promise<void> => {
     const animeInfo = await getAnimeInfo(publishingRequest.myAnimeListId);
@@ -44,7 +44,7 @@ const addEpisode = async (
     console.log("Anime updated in database");
 };
 
-const tryProcessNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
     const anime = await getOrRegisterAnimeAndLock(publishingRequest);
 
     const topicExists = 'threadId' in anime;
@@ -63,10 +63,15 @@ const tryProcessNewEpisode = async (publishingRequest: VideoDownloadedNotificati
 };
 
 export const processNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
+    if (!publishingRequest.messageId) {
+        console.warn("MessageId is not set, skipping");
+        return;
+    }
+
     let totalRetries = 0;
     while (totalRetries < config.retries.max) {
         try {
-            return await tryProcessNewEpisode(publishingRequest);
+            return await tryProcessNewEpisode(publishingRequest as Required<VideoDownloadedNotification>);
         } catch (e: unknown) {
             if (!(e instanceof AnimeLockedError || e instanceof ConditionalCheckFailedException)) {
                 await unlock(publishingRequest);

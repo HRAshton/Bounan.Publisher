@@ -1,19 +1,11 @@
-﻿import { Scenes } from "../scenes";
-import { ScenesInfo } from "../scenes-info";
-import { RawVideoPayload } from "./raw-models";
-import { toCamelCase } from "../../utils/object-transformer";
+﻿import { KeysToCamelCase, toCamelCase } from "../../utils/object-transformer";
+import { VideoDownloadedNotification as RawVideoDownloadedNotification } from "../../common/ts-generated";
 
-export interface VideoDownloadedNotification extends ScenesInfo {
-    myAnimeListId: number;
-    dub: string;
-    episode: number;
-    messageId: number;
-    scenes?: Scenes;
-}
+export type VideoDownloadedNotification = KeysToCamelCase<RawVideoDownloadedNotification>;
 
-export const fromJson = (jsonText: string): VideoDownloadedNotification => {
-    const json = JSON.parse(jsonText);
-    const result = toCamelCase(json) as unknown as Partial<VideoDownloadedNotification>;
+export const fromJson = (jsonText: string): KeysToCamelCase<VideoDownloadedNotification> => {
+    const json = JSON.parse(jsonText) as unknown as Partial<RawVideoDownloadedNotification>;
+    const result = toCamelCase(json);
 
     if (!result) {
         throw new Error("Invalid JSON: " + result);
@@ -35,5 +27,5 @@ export const fromJson = (jsonText: string): VideoDownloadedNotification => {
         throw new Error("Invalid MessageId: " + result);
     }
 
-    return result as VideoDownloadedNotification;
+    return result as KeysToCamelCase<VideoDownloadedNotification>;
 }

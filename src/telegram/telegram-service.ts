@@ -52,7 +52,7 @@ const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<
 }
 
 const sendSingleEpisodeInternal = async (
-    publishingRequest: VideoDownloadedNotification,
+    publishingRequest: Required<VideoDownloadedNotification>,
     animeInfo: ShikiAnimeInfo,
     threadId: number,
 ): Promise<EpisodeMessageInfo> => {
@@ -78,7 +78,7 @@ const sendSingleEpisodeInternal = async (
 }
 
 export const publishAnime = async (
-    publishingRequest: VideoDownloadedNotification,
+    publishingRequest: Required<VideoDownloadedNotification>,
     animeInfo: ShikiAnimeInfo,
 ): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
@@ -117,7 +117,7 @@ export const publishAnime = async (
 }
 
 export const publishEpisode = async (
-    publishingRequest: VideoDownloadedNotification,
+    publishingRequest: Required<VideoDownloadedNotification>,
     animeInfo: ShikiAnimeInfo,
     anime: PublishedAnime,
 ): Promise<EpisodeMessageInfo[]> => {

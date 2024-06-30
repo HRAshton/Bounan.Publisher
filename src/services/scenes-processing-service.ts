@@ -50,25 +50,29 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
 
 export const processScenes = async (updatingRequests: SceneRecognisedNotification): Promise<void> => {
     console.log("Processing scenes: ", updatingRequests);
-    const nonEmptyRequestItems = updatingRequests.items.filter(x => !!x.scenes);
+    const items = updatingRequests.items as SceneRecognisedNotificationItem[];
+    const nonEmptyRequestItems = items.filter((x: SceneRecognisedNotificationItem) => !!x.scenes);
     if (!nonEmptyRequestItems.length) {
         console.log("No scenes to process, skipping");
         return;
     }
 
     const requestItemsWithNonEmptyScenes = nonEmptyRequestItems
-        .filter(x => Object.values(x.scenes!).filter(x => !!x).length > 0);
+        .filter((x: SceneRecognisedNotificationItem) => Object.values(x.scenes!).filter(x => !!x).length > 0);
     if (!requestItemsWithNonEmptyScenes.length) {
         console.log("No non-empty scenes to process, skipping");
         return;
     }
 
-    const groupedRequestsItems = nonEmptyRequestItems.reduce((acc, item) => {
-        const key = `${item.myAnimeListId}_${item.dub}`;
-        acc[key] = acc[key] || [];
-        acc[key].push(item);
-        return acc;
-    }, {} as Record<string, SceneRecognisedNotificationItem[]>);
+    const groupedRequestsItems = nonEmptyRequestItems.reduce(
+        (acc: Record<string, SceneRecognisedNotificationItem[]>, item: SceneRecognisedNotificationItem) => {
+            const key = `${item.myAnimeListId}_${item.dub}`;
+            acc[key] = acc[key] || [];
+            acc[key].push(item);
+            return acc;
+        },
+        {},
+    );
     console.log("Grouped requests: ", groupedRequestsItems);
 
     for (const key of Object.keys(groupedRequestsItems)) {

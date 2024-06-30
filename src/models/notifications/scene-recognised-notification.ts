@@ -1,16 +1,15 @@
-﻿import { ScenesInfo } from "../scenes-info";
-import { toCamelCase } from "../../utils/object-transformer";
+﻿import { KeysToCamelCase, toCamelCase } from "../../utils/object-transformer";
+import {
+    SceneRecognisedNotification as RawSceneRecognisedNotification,
+    SceneRecognisedNotificationItem as RawSceneRecognisedNotificationItem,
+} from "../../common/ts-generated";
 
-export interface SceneRecognisedNotificationItem extends ScenesInfo {
-}
+export type SceneRecognisedNotification = KeysToCamelCase<RawSceneRecognisedNotification>;
+export type SceneRecognisedNotificationItem = KeysToCamelCase<RawSceneRecognisedNotificationItem>;
 
-export interface SceneRecognisedNotification {
-    items: SceneRecognisedNotificationItem[];
-}
-
-export const fromJson = (jsonText: string): SceneRecognisedNotification => {
+export const fromJson = (jsonText: string): KeysToCamelCase<RawSceneRecognisedNotification> => {
     const json = JSON.parse(jsonText);
-    const result = toCamelCase(json) as unknown as SceneRecognisedNotification;
+    const result = toCamelCase(json);
 
     if (!result) {
         throw new Error("Invalid JSON: " + result);
@@ -20,9 +19,7 @@ export const fromJson = (jsonText: string): SceneRecognisedNotification => {
         throw new Error("Invalid Items: " + result);
     }
 
-    for (const currItem of result.items) {
-        const item: Partial<SceneRecognisedNotificationItem> = currItem;
-
+    for (const item of result.items) {
         if (!Number.isInteger(item.myAnimeListId)) {
             throw new Error("Invalid MyAnimeListId: " + item);
         }
@@ -39,12 +36,12 @@ export const fromJson = (jsonText: string): SceneRecognisedNotification => {
             throw new Error("Invalid Scenes: " + item);
         }
 
-        for (const scene of Object.values(item.scenes)) {
+        for (const scene of Object.values(item.scenes) as any[]) {
             if (scene && (!Number.isFinite(scene.start) || !Number.isFinite(scene.end))) {
                 throw new Error("Invalid Scene: " + JSON.stringify(item));
             }
         }
     }
 
-    return result;
+    return result as KeysToCamelCase<SceneRecognisedNotification>;
 }
