@@ -62,13 +62,13 @@ export class Stack extends AwsStack {
         });
 
         const topic = new sns.Topic(this, 'ErrorsAlarmTopic');
-        topic.addSubscription(new subscriptions.EmailSubscription(config.errorAlarmEmail));
+        topic.addSubscription(new subscriptions.EmailSubscription(config.alertEmail));
         alarm.addAlarmAction(new cloudwatchActions.SnsAction(topic));
     }
 
     private createVideoLambda(table: dynamodb.Table, errorsLogGroup: logs.LogGroup): lambda.Function {
         return new LlrtFunction(this, 'VideoLambdaFunction', {
-            entry: 'app/video-handler.ts',
+            entry: 'src/video-handler.ts',
             handler: 'videoHandler',
             logGroup: errorsLogGroup,
             environment: this.getEnvVars(table),
@@ -78,7 +78,7 @@ export class Stack extends AwsStack {
 
     private createScenesLambda(table: dynamodb.Table, errorsLogGroup: logs.LogGroup): lambda.Function {
         return new LlrtFunction(this, 'ScenesLambdaFunction', {
-            entry: 'app/scenes-handler.ts',
+            entry: 'src/scenes-handler.ts',
             handler: 'scenesHandler',
             logGroup: errorsLogGroup,
             environment: this.getEnvVars(table),

@@ -1,7 +1,7 @@
 ﻿import configFile from './config.json';
 
 interface Config {
-    errorAlarmEmail: string;
+    alertEmail: string;
     telegramToken: string;
     telegramSourceChannelId: string;
     telegramTargetGroupId: string;
@@ -13,7 +13,7 @@ interface Config {
 
 export const config: Config = configFile;
 
-if (!config.errorAlarmEmail) {
+if (!config.alertEmail) {
     throw new Error('errorAlarmEmail is required');
 }
 if (!config.telegramToken) {
