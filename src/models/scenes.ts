@@ -1,4 +1,4 @@
-﻿import { Interval } from "./interval";
+﻿import { Interval } from './interval';
 
 export interface Scenes {
     opening?: Interval<number>;

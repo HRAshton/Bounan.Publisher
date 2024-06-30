@@ -1,5 +1,8 @@
-﻿import { videoHandler } from "./video-handler";
-import { scenesHandler } from "./scenes-handler";
+﻿/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { videoHandler } from './video-handler';
+import { scenesHandler } from './scenes-handler';
 
 export interface RawVideoPayload {
     MyAnimeListId: number;
@@ -29,7 +32,7 @@ export interface RawScenesPayload {
 }
 
 const ep = async (message: RawVideoPayload) => {
-    console.log("Processing message: ", message);
+    console.log('Processing message: ', message);
 
     await videoHandler(
         // @ts-ignore
@@ -37,11 +40,11 @@ const ep = async (message: RawVideoPayload) => {
         null as any,
         () => null);
 
-    console.log("Message processed");
+    console.log('Message processed');
 }
 
 const sc = async (message: RawScenesPayload) => {
-    console.log("Processing message: ", message);
+    console.log('Processing message: ', message);
 
     await scenesHandler(
         // @ts-ignore
@@ -49,7 +52,7 @@ const sc = async (message: RawScenesPayload) => {
         null as any,
         () => null);
 
-    console.log("Message processed");
+    console.log('Message processed');
 }
 
 const main = async () => {
@@ -57,7 +60,7 @@ const main = async () => {
 
     await ep({
         MyAnimeListId: myAnimeListId,
-        Dub: "AniLibria.TV",
+        Dub: 'AniLibria.TV',
         Episode: 1,
         MessageId: 63,
         Scenes: {
@@ -69,7 +72,7 @@ const main = async () => {
 
     await ep({
         MyAnimeListId: myAnimeListId,
-        Dub: "AniLibria.TV",
+        Dub: 'AniLibria.TV',
         Episode: 3,
         MessageId: 63,
         Scenes: {
@@ -80,14 +83,14 @@ const main = async () => {
 
     await ep({
         MyAnimeListId: myAnimeListId,
-        Dub: "AniLibria.TV",
+        Dub: 'AniLibria.TV',
         Episode: 4,
         MessageId: 63,
     });
 
     await ep({
         MyAnimeListId: myAnimeListId,
-        Dub: "AniLibria.TV",
+        Dub: 'AniLibria.TV',
         Episode: 2,
         MessageId: 63,
         Scenes: {
@@ -98,7 +101,7 @@ const main = async () => {
 
     await ep({
         MyAnimeListId: myAnimeListId,
-        Dub: "AniLibria.TV",
+        Dub: 'AniLibria.TV',
         Episode: 1,
         MessageId: 63,
         Scenes: {
@@ -111,7 +114,7 @@ const main = async () => {
         Items: [
             {
                 MyAnimeListId: myAnimeListId,
-                Dub: "AniLibria.TV",
+                Dub: 'AniLibria.TV',
                 Episode: 1,
                 Scenes: {
                     Opening: { Start: 0, End: 50 },
@@ -121,7 +124,7 @@ const main = async () => {
             },
             {
                 MyAnimeListId: myAnimeListId,
-                Dub: "AniLibria.TV",
+                Dub: 'AniLibria.TV',
                 Episode: 2,
                 Scenes: {
                     Opening: { Start: 0, End: 50 },

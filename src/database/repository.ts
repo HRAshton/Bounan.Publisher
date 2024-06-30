@@ -1,11 +1,11 @@
-﻿import { AnimeKey } from "../models/anime-key";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { PublishedAnimeEntity, RegisteredAnimeEntity } from "./entities/published-anime-entity";
-import { config } from "../config/config";
-import { EpisodeMessageInfoEntity } from "./entities/episode-message-info-entity";
-import { HeaderMessageInfoEntity } from "./entities/header-message-info-entity";
-import { AnimeLockedError } from "../errors/anime-locked-error";
+﻿import { AnimeKey } from '../models/anime-key';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { PublishedAnimeEntity, RegisteredAnimeEntity } from './entities/published-anime-entity';
+import { config } from '../config/config';
+import { EpisodeMessageInfoEntity } from './entities/episode-message-info-entity';
+import { HeaderMessageInfoEntity } from './entities/header-message-info-entity';
+import { AnimeLockedError } from '../errors/anime-locked-error';
 
 const dynamoDbClient = new DynamoDBClient();
 const docClient = DynamoDBDocumentClient.from(dynamoDbClient);
@@ -18,10 +18,10 @@ const lock = async (key: AnimeKey): Promise<void> => {
     await docClient.send(new UpdateCommand({
         TableName: config.database.tableName,
         Key: { AnimeKey: getTableKey(key) },
-        ConditionExpression: "attribute_exists(AnimeKey) AND attribute_not_exists(Locked)",
-        UpdateExpression: "SET Locked = :locked",
+        ConditionExpression: 'attribute_exists(AnimeKey) AND attribute_not_exists(Locked)',
+        UpdateExpression: 'SET Locked = :locked',
         ExpressionAttributeValues: {
-            ":locked": true,
+            ':locked': true,
         },
     }));
 }
@@ -30,10 +30,10 @@ export const unlock = async (key: AnimeKey): Promise<void> => {
     await docClient.send(new UpdateCommand({
         TableName: config.database.tableName,
         Key: { AnimeKey: getTableKey(key) },
-        ConditionExpression: "attribute_exists(AnimeKey) AND Locked = :locked",
-        UpdateExpression: "REMOVE Locked",
+        ConditionExpression: 'attribute_exists(AnimeKey) AND Locked = :locked',
+        UpdateExpression: 'REMOVE Locked',
         ExpressionAttributeValues: {
-            ":locked": true,
+            ':locked': true,
         },
     }));
 }
@@ -49,7 +49,7 @@ export const getOrRegisterAnimeAndLock = async (
     const response = await docClient.send(command);
     if (response.Item) {
         if (response.Item.Locked) {
-            throw new AnimeLockedError("Anime is locked");
+            throw new AnimeLockedError('Anime is locked');
         }
 
         await lock(key);
@@ -69,7 +69,7 @@ export const getOrRegisterAnimeAndLock = async (
             AnimeKey: getTableKey(key),
             Locked: true,
         },
-        ConditionExpression: "attribute_not_exists(AnimeKey)",
+        ConditionExpression: 'attribute_not_exists(AnimeKey)',
     }));
 
     return anime;
@@ -85,15 +85,15 @@ export const setHeaderAndFirstEpisodeUnlock = async (
     const command = new UpdateCommand({
         TableName: config.database.tableName,
         Key: { AnimeKey: getTableKey(anime) },
-        ConditionExpression: "attribute_exists(AnimeKey)",
-        UpdateExpression: "SET threadId = :threadId, headerPost = :headerPost, episodes = :episodes, updatedAt = :updatedAt REMOVE Locked",
+        ConditionExpression: 'attribute_exists(AnimeKey)',
+        UpdateExpression: 'SET threadId = :threadId, headerPost = :headerPost, episodes = :episodes, updatedAt = :updatedAt REMOVE Locked',
         ExpressionAttributeValues: {
-            ":threadId": threadId,
-            ":headerPost": headerPostInfo,
-            ":episodes": {
+            ':threadId': threadId,
+            ':headerPost': headerPostInfo,
+            ':episodes': {
                 [episode]: episodePostInfo,
             },
-            ":updatedAt": new Date().toISOString(),
+            ':updatedAt': new Date().toISOString(),
         },
     });
 
@@ -107,17 +107,17 @@ export const upsertEpisodesAndUnlock = async (
     const command = new UpdateCommand({
         TableName: config.database.tableName,
         Key: { AnimeKey: getTableKey(originalValue) },
-        ConditionExpression: "attribute_exists(AnimeKey)",
-        UpdateExpression: "SET #episodes = :episodes, updatedAt = :updatedAt REMOVE Locked",
+        ConditionExpression: 'attribute_exists(AnimeKey)',
+        UpdateExpression: 'SET #episodes = :episodes, updatedAt = :updatedAt REMOVE Locked',
         ExpressionAttributeNames: {
-            "#episodes": "episodes",
+            '#episodes': 'episodes',
         },
         ExpressionAttributeValues: {
-            ":episodes": {
+            ':episodes': {
                 ...originalValue.episodes,
                 ...newEpisodes,
             },
-            ":updatedAt": new Date().toISOString(),
+            ':updatedAt': new Date().toISOString(),
         },
     });
 

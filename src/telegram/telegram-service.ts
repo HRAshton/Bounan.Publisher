@@ -1,11 +1,11 @@
-﻿import { VideoDownloadedNotification } from "../models/notifications/video-downloaded-notification";
-import { PublishedAnime } from "../models/published-anime";
-import { config } from "../config/config";
-import { hashCode } from "../utils/hash";
-import { PublishingResult } from "./models/publishing-result";
-import { EpisodeMessageInfo } from "./models/message-info";
-import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from "../utils/post-maker";
-import { ShikiAnimeInfo } from "../shikimori-client/shiki-anime-info";
+﻿import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
+import { PublishedAnime } from '../models/published-anime';
+import { config } from '../config/config';
+import { hashCode } from '../utils/hash';
+import { PublishingResult } from './models/publishing-result';
+import { EpisodeMessageInfo } from './models/message-info';
+import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../utils/post-maker';
+import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
 import {
     createForumTopic,
     copyMessages,
@@ -13,17 +13,17 @@ import {
     deleteMessages,
     sendPhoto,
     copyMessage,
-} from "telegram-bot-api-lightweight-client/src/client";
-import { SHIKIMORI_BASE_URL } from "../shikimori-client/shikimori-client";
-import { PublishedAnimeEntity } from "../database/entities/published-anime-entity";
+} from 'telegram-bot-api-lightweight-client/src/client';
+import { SHIKIMORI_BASE_URL } from '../shikimori-client/shikimori-client';
+import { PublishedAnimeEntity } from '../database/entities/published-anime-entity';
 
 const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<EpisodeMessageInfo[]> => {
-    console.log("Reordering episodes for anime: ", anime);
+    console.log('Reordering episodes for anime: ', anime);
 
     const episodesToForward = Object.values(anime.episodes)
         .filter(x => x.episode > episode)
         .sort((a, b) => a.episode - b.episode);
-    console.log("Episodes to forward: ", episodesToForward);
+    console.log('Episodes to forward: ', episodesToForward);
     if (episodesToForward.length === 0) {
         return [];
     }
@@ -36,13 +36,13 @@ const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<
         message_thread_id: anime.threadId,
         disable_notification: true,
     });
-    console.log("Forwarded messages: ", forwardedMessages);
+    console.log('Forwarded messages: ', forwardedMessages);
 
     await deleteMessages({
         chat_id: config.telegram.targetGroupId,
         message_ids: messagesToForward,
     });
-    console.log("Deleted messages");
+    console.log('Deleted messages');
 
     return episodesToForward.map((episode, index) => ({
         episode: episode.episode,
@@ -137,12 +137,12 @@ export const updateEpisodeMessages = async (
         episode: number;
     }[],
 ) => {
-    console.log("Updating info");
+    console.log('Updating info');
 
     for (const captionToUpdate of captionsToUpdate) {
-        console.log("Updating caption: ", captionToUpdate);
+        console.log('Updating caption: ', captionToUpdate);
         const episode = publishedAnime.episodes[captionToUpdate.episode];
-        console.log("Episode: ", episode);
+        console.log('Episode: ', episode);
 
         const result = await editMessageCaption({
             chat_id: config.telegram.targetGroupId,
@@ -155,5 +155,5 @@ export const updateEpisodeMessages = async (
         }
     }
 
-    console.log("Info updated");
+    console.log('Info updated');
 }

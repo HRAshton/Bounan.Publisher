@@ -1,7 +1,7 @@
-﻿import { ShikiAnimeInfo } from "../shikimori-client/shiki-anime-info";
-import { secToTime } from "./sec-to-time";
-import { ScenesInfo } from "../models/scenes-info";
-import { VideoDownloadedNotification } from "../models/notifications/video-downloaded-notification";
+﻿import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
+import { secToTime } from './sec-to-time';
+import { ScenesInfo } from '../models/scenes-info';
+import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');

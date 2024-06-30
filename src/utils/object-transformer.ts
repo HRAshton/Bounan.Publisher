@@ -1,4 +1,6 @@
-﻿import { camelCase } from "change-case";
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { camelCase } from 'change-case';
 
 type PascalToCamelCase<S extends string> = S extends `${infer F}${infer R}`
     ? `${Lowercase<F>}${R}`
