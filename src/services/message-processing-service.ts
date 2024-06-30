@@ -13,17 +13,17 @@ import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 
 // Creates a new topic for the anime, publishes the header message and the first episode
 const createTopic = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
-    const animeInfo = await getAnimeInfo(publishingRequest.myAnimeListId);
+    const animeInfo = await getAnimeInfo(publishingRequest.videoKey.myAnimeListId);
     console.log('Got anime info');
 
     const publishingResult = await publishAnime(publishingRequest, animeInfo);
     console.log('Published anime with message: ', publishingResult);
 
     await setHeaderAndFirstEpisodeUnlock(
-        publishingRequest,
+        publishingRequest.videoKey,
         publishingResult.threadId,
         publishingResult.headerMessageInfo,
-        publishingRequest.episode,
+        publishingRequest.videoKey.episode,
         publishingResult.episodeMessageInfo);
     console.log(`Anime topic created with message: ${publishingResult}`);
 };
@@ -33,7 +33,7 @@ const addEpisode = async (
     publishingRequest: Required<VideoDownloadedNotification>,
     publishedAnime: PublishedAnimeEntity,
 ): Promise<void> => {
-    const animeInfo = await getAnimeInfo(publishingRequest.myAnimeListId);
+    const animeInfo = await getAnimeInfo(publishingRequest.videoKey.myAnimeListId);
     console.log('Got anime info');
 
     const messageInfos = await publishEpisode(publishingRequest, animeInfo, publishedAnime);
@@ -45,10 +45,10 @@ const addEpisode = async (
 };
 
 const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
-    const anime = await getOrRegisterAnimeAndLock(publishingRequest);
+    const anime = await getOrRegisterAnimeAndLock(publishingRequest.videoKey);
 
     const topicExists = 'threadId' in anime;
-    const episodeExists = topicExists && !!anime.episodes?.[publishingRequest.episode];
+    const episodeExists = topicExists && !!anime.episodes?.[publishingRequest.videoKey.episode];
 
     if (episodeExists) {
         console.log('Episode already published, skipping');
@@ -74,7 +74,7 @@ export const processNewEpisode = async (publishingRequest: VideoDownloadedNotifi
             return await tryProcessNewEpisode(publishingRequest as Required<VideoDownloadedNotification>);
         } catch (e: unknown) {
             if (!(e instanceof AnimeLockedError || e instanceof ConditionalCheckFailedException)) {
-                await unlock(publishingRequest);
+                await unlock(publishingRequest.videoKey);
             }
 
             if (totalRetries === config.retries.max - 1) {

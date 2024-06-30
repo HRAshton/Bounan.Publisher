@@ -4,7 +4,7 @@
 // process.env.TELEGRAM_TARGET_GROUP_ID='-'
 // process.env.DATABASE_TABLE_NAME=''
 // process.env.RETRIES_MAX=''
-// process.env.RETRIES_DELAY_MS=''
+// process.env.RETRIES_DELAY_MS=' '
 
 const getEnv = (key: string): string => {
     const value = process.env[key];

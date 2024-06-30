@@ -9,7 +9,7 @@ import { updateEpisodeMessages } from '../telegram/telegram-service';
 import { EpisodeMessageInfoEntity } from '../database/entities/episode-message-info-entity';
 
 const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]): Promise<void> => {
-    const publishedAnime = await getOrRegisterAnimeAndLock(notificationItems[0]);
+    const publishedAnime = await getOrRegisterAnimeAndLock(notificationItems[0].videoKey);
     console.log('Anime retrieved: ', publishedAnime);
 
     if (!('threadId' in publishedAnime)) {
@@ -22,8 +22,8 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
     console.log('Anime info retrieved');
 
     const newCaptions = notificationItems.map(item => ({
-        episode: item.episode,
-        caption: createTextForEpisodePost(animeInfo, item),
+        episode: item.videoKey.episode,
+        caption: createTextForEpisodePost(animeInfo, item.videoKey),
     }));
 
     const captionsToUpdate = newCaptions
@@ -66,7 +66,7 @@ export const processScenes = async (updatingRequests: SceneRecognisedNotificatio
 
     const groupedRequestsItems = nonEmptyRequestItems.reduce(
         (acc: Record<string, SceneRecognisedNotificationItem[]>, item: SceneRecognisedNotificationItem) => {
-            const key = `${item.myAnimeListId}_${item.dub}`;
+            const key = `${item.videoKey.myAnimeListId}_${item.videoKey.dub}`;
             acc[key] = acc[key] || [];
             acc[key].push(item);
             return acc;

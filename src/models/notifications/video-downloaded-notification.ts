@@ -1,5 +1,5 @@
 ﻿import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
-import { VideoDownloadedNotification as RawVideoDownloadedNotification } from '../../common/ts-generated';
+import { VideoDownloadedNotification as RawVideoDownloadedNotification } from '../../common/ts/interfaces';
 
 export type VideoDownloadedNotification = KeysToCamelCase<RawVideoDownloadedNotification>;
 
@@ -8,23 +8,27 @@ export const fromJson = (jsonText: string): KeysToCamelCase<VideoDownloadedNotif
     const result = toCamelCase(json);
 
     if (!result) {
-        throw new Error('Invalid JSON: ' + result);
+        throw new Error('Invalid JSON: ' + JSON.stringify(result));
     }
 
-    if (!Number.isInteger(result.myAnimeListId)) {
-        throw new Error('Invalid MyAnimeListId: ' + result);
+    if (!result.videoKey) {
+        throw new Error('Invalid JSON: ' + JSON.stringify(result));
     }
 
-    if (typeof result.dub !== 'string' || result.dub.length === 0) {
-        throw new Error('Invalid Dub: ' + result);
+    if (!Number.isInteger(result.videoKey.myAnimeListId)) {
+        throw new Error('Invalid MyAnimeListId: ' + JSON.stringify(result));
     }
 
-    if (!Number.isInteger(result.episode)) {
-        throw new Error('Invalid Episode: ' + result);
+    if (typeof result.videoKey.dub !== 'string' || result.videoKey.dub.length === 0) {
+        throw new Error('Invalid Dub: ' + JSON.stringify(result));
+    }
+
+    if (!Number.isInteger(result.videoKey.episode)) {
+        throw new Error('Invalid Episode: ' + JSON.stringify(result));
     }
 
     if (!Number.isInteger(result.messageId)) {
-        throw new Error('Invalid MessageId: ' + result);
+        throw new Error('Invalid MessageId: ' + JSON.stringify(result));
     }
 
     return result as KeysToCamelCase<VideoDownloadedNotification>;
