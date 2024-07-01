@@ -1,7 +1,8 @@
 ﻿import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
 import { secToTime } from './sec-to-time';
-import { ScenesInfo } from '../models/scenes-info';
 import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
+import { SceneRecognisedNotificationItem } from "../common/ts/interfaces";
+import { KeysToCamelCase } from "./object-transformer";
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
@@ -13,7 +14,7 @@ export const createTextForTopicName = (
 ): string => {
     return [
         animeInfo.russian || animeInfo.name,
-        publishingRequest.dub,
+        publishingRequest.videoKey.dub,
         animeInfo.aired_on?.substring(0, 4)
     ]
         .filter(Boolean)
@@ -42,7 +43,7 @@ export const createTextForHeaderPost = (
 
     return [
         `<b>${animeInfo.russian || animeInfo.name}</b>`,
-        publishingRequest.dub && `В озвучке ${escapeLinks(publishingRequest.dub)}`,
+        publishingRequest.videoKey.dub && `В озвучке ${escapeLinks(publishingRequest.videoKey.dub)}`,
         animeInfo.aired_on && `Год выпуска: ${animeInfo.aired_on.substring(0, 4)}`,
         genres && `Жанры: ${genres}`,
         animeInfo.franchise && `Франшиза: #${animeInfo.franchise}`,
@@ -56,11 +57,11 @@ export const createTextForHeaderPost = (
 
 export const createTextForEpisodePost = (
     animeInfo: ShikiAnimeInfo,
-    publishingRequest: ScenesInfo,
+    publishingRequest: KeysToCamelCase<SceneRecognisedNotificationItem>,
 ): string => {
     return [
-        `<b>${animeInfo.russian || animeInfo.name}</b> ${publishingRequest.dub && `(${escapeLinks(publishingRequest.dub)})`}`,
-        animeInfo.episodes && animeInfo.episodes > 1 && `Серия ${publishingRequest.episode}`,
+        `<b>${animeInfo.russian || animeInfo.name}</b> ${publishingRequest.videoKey.dub && `(${escapeLinks(publishingRequest.videoKey.dub)})`}`,
+        animeInfo.episodes && animeInfo.episodes > 1 && `Серия ${publishingRequest.videoKey.episode}`,
 
         publishingRequest.scenes?.opening
         && `${secToTime(publishingRequest.scenes.opening.end)} - Конец опенинга (от ${secToTime(publishingRequest.scenes.opening.start)})`,

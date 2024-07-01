@@ -23,7 +23,7 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
 
     const newCaptions = notificationItems.map(item => ({
         episode: item.videoKey.episode,
-        caption: createTextForEpisodePost(animeInfo, item.videoKey),
+        caption: createTextForEpisodePost(animeInfo, item),
     }));
 
     const captionsToUpdate = newCaptions
