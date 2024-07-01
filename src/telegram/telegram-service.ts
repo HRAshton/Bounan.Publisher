@@ -56,7 +56,7 @@ const sendSingleEpisodeInternal = async (
     animeInfo: ShikiAnimeInfo,
     threadId: number,
 ): Promise<EpisodeMessageInfo> => {
-    const caption = createTextForEpisodePost(animeInfo, publishingRequest);
+    const caption = createTextForEpisodePost(animeInfo, publishingRequest.videoKey);
     const episodeMessage = await copyMessage({
         chat_id: config.telegram.targetGroupId,
         from_chat_id: config.telegram.sourceChannelId,
@@ -71,7 +71,7 @@ const sendSingleEpisodeInternal = async (
     }
 
     return {
-        episode: publishingRequest.episode,
+        episode: publishingRequest.videoKey.episode,
         messageId: episodeMessage.result.message_id,
         hash: hashCode(caption),
     };
@@ -106,7 +106,7 @@ export const publishAnime = async (
     const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, threadId);
 
     return {
-        episode: publishingRequest.episode,
+        episode: publishingRequest.videoKey.episode,
         threadId: threadId,
         headerMessageInfo: {
             messageId: firstPost.result.message_id,
@@ -122,7 +122,7 @@ export const publishEpisode = async (
     anime: PublishedAnime,
 ): Promise<EpisodeMessageInfo[]> => {
     const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, anime.threadId);
-    const forwardedMessages = await reorderEpisodes(anime, publishingRequest.episode);
+    const forwardedMessages = await reorderEpisodes(anime, publishingRequest.videoKey.episode);
 
     return [
         episodeMessageInfo,
