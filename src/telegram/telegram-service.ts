@@ -56,7 +56,7 @@ const sendSingleEpisodeInternal = async (
     animeInfo: ShikiAnimeInfo,
     threadId: number,
 ): Promise<EpisodeMessageInfo> => {
-    const caption = createTextForEpisodePost(animeInfo, publishingRequest.videoKey);
+    const caption = createTextForEpisodePost(animeInfo, publishingRequest);
     const episodeMessage = await copyMessage({
         chat_id: config.telegram.targetGroupId,
         from_chat_id: config.telegram.sourceChannelId,
