@@ -17,7 +17,7 @@ const processMessage = async (message: string): Promise<void> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const scenesHandler: SNSHandler = async (event: SNSEvent, context: Context): Promise<void> => {
+export const scenesHandler = async (event: SNSEvent, context: Context): Promise<void> => {
     console.log('Processing event: ', event);
     for (const record of event.Records) {
         console.log('Processing record: ', record?.Sns?.MessageId);
