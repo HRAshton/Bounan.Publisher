@@ -1,15 +1,15 @@
-﻿import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
-import * as cloudwatchActions from "aws-cdk-lib/aws-cloudwatch-actions";
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as lambdaEventSources from "aws-cdk-lib/aws-lambda-event-sources";
-import * as logs from "aws-cdk-lib/aws-logs";
-import * as sns from "aws-cdk-lib/aws-sns";
-import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
+﻿import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Construct } from 'constructs';
 import { CfnOutput, Duration, Stack as AwsStack, StackProps } from 'aws-cdk-lib';
-import { LlrtFunction } from "cdk-lambda-llrt";
-import { config } from "./config";
+import { LlrtFunction } from 'cdk-lambda-llrt';
+import { config } from './config';
 
 export class Stack extends AwsStack {
     constructor(scope: Construct, id: string, props: StackProps) {
@@ -107,7 +107,7 @@ export class Stack extends AwsStack {
         };
     }
 
-    private out(name: string, value: any): void {
+    private out(name: string, value: unknown): void {
         new CfnOutput(this, name, { value: JSON.stringify(value) });
     }
 }

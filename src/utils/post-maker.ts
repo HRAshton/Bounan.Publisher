@@ -1,8 +1,8 @@
 ﻿import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
 import { secToTime } from './sec-to-time';
 import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
-import { SceneRecognisedNotificationItem } from "../common/ts/interfaces";
-import { KeysToCamelCase } from "./object-transformer";
+import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
+import { KeysToCamelCase } from './object-transformer';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
