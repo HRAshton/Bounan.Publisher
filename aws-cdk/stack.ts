@@ -24,6 +24,10 @@ export class Stack extends AwsStack {
         this.AttachDownloadedSnsEvent(lambdas.get(LambdaHandler.OnVideoDownloaded)!);
         this.AttachRecognisedSnsEvent(lambdas.get(LambdaHandler.OnScenesRecognised)!);
 
+        const updatePublishingDetailsLambda = lambda.Function.fromFunctionName(
+            this, 'UpdatePublishingDetailsLambda', config.updatePublishingDetailsFunctionName);
+        updatePublishingDetailsLambda.grantInvoke(lambdas.get(LambdaHandler.OnVideoDownloaded)!);
+
         this.out('config', config);
         this.out('tableName', table.tableName);
         this.out('local-config', Object.entries(this.getEnvVars(table))
@@ -95,6 +99,7 @@ export class Stack extends AwsStack {
 
     private getEnvVars(table: dynamodb.Table): { [key: string]: string } {
         return {
+            ANIMAN_UPDATE_PUBLISHING_DETAILS_FUNCTION_NAME: config.updatePublishingDetailsFunctionName,
             DATABASE_TABLE_NAME: table.tableName,
             TELEGRAM_TOKEN: config.telegramToken,
             TELEGRAM_SOURCE_CHANNEL_ID: config.telegramSourceChannelId,

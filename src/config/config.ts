@@ -5,6 +5,7 @@
 // process.env.TELEGRAM_TARGET_GROUP_ID = '-';
 // process.env.RETRIES_MAX = '';
 // process.env.RETRIES_DELAY_MS = '';
+// process.env.ANIMAN_UPDATE_PUBLISHING_DETAILS_FUNCTION_NAME='';
 
 const getEnv = (key: string): string => {
     const value = process.env[key];
@@ -17,6 +18,9 @@ const getEnv = (key: string): string => {
 }
 
 export interface Config {
+    animan: {
+        updatePublishingDetailsFunctionName: string;
+    };
     telegram: {
         token: string;
         sourceChannelId: string;
@@ -32,6 +36,9 @@ export interface Config {
 }
 
 export const config: Config = {
+    animan: {
+        updatePublishingDetailsFunctionName: getEnv('ANIMAN_UPDATE_PUBLISHING_DETAILS_FUNCTION_NAME'),
+    },
     telegram: {
         token: getEnv('TELEGRAM_TOKEN'),
         sourceChannelId: getEnv('TELEGRAM_SOURCE_CHANNEL_ID'),

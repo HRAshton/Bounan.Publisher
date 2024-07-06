@@ -9,6 +9,7 @@ import { AnimeLockedError } from '../../errors/anime-locked-error';
 import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { ShikiAnimeInfo } from '../../api-clients/shikimori/shiki-anime-info';
 import { AnimeKey } from '../../models/anime-key';
+import { updatePublishingDetails } from '../../api-clients/animan/animan-client';
 
 const createTopic = async (
     animeInfo: ShikiAnimeInfo,
@@ -30,13 +31,15 @@ const addEpisode = async (
     animeInfo: ShikiAnimeInfo,
     threadId: number,
     publishedEpisodes: PublishedAnimeEntity['episodes'],
-): Promise<void> => {
+): Promise<{ episode: number; messageId: number; }[]> => {
     const messageInfos = await publishEpisode(publishingRequest, animeInfo, threadId, publishedEpisodes);
     console.log('Published episode with message: ', messageInfos);
 
     const newEpisodes = Object.fromEntries(messageInfos.map(x => [x.episode, x]));
     await upsertEpisodesAndUnlock(publishingRequest.videoKey, publishedEpisodes, newEpisodes);
     console.log('Anime updated in database');
+
+    return messageInfos;
 };
 
 const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
@@ -57,10 +60,11 @@ const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedN
         : await createTopic(animeInfo, anime);
 
     console.log('The topic was found in the database, adding episode');
-    const episodeMessageId = await addEpisode(publishingRequest, animeInfo, threadId, episodes);
-    console.log('Episode added to the database' + episodeMessageId);
+    const messageIds = await addEpisode(publishingRequest, animeInfo, threadId, episodes);
+    console.log('Episode added to the database: ' + JSON.stringify(messageIds));
 
-
+    await updatePublishingDetails(anime, threadId, messageIds);
+    console.log('Publishing details updated');
 };
 
 export const processNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {
@@ -74,6 +78,8 @@ export const processNewEpisode = async (publishingRequest: VideoDownloadedNotifi
         try {
             return await tryProcessNewEpisode(publishingRequest as Required<VideoDownloadedNotification>);
         } catch (e: unknown) {
+            console.warn('Failed to process anime, retrying', e);
+
             if (!(e instanceof AnimeLockedError || e instanceof ConditionalCheckFailedException)) {
                 await unlock(publishingRequest.videoKey);
             }
@@ -83,9 +89,7 @@ export const processNewEpisode = async (publishingRequest: VideoDownloadedNotifi
                 throw e;
             }
 
-            console.warn('Failed to process anime, retrying', e);
             totalRetries++;
-
             const timeout = totalRetries * config.retries.delayMs + Math.random() * 1000;
             await new Promise(resolve => setTimeout(resolve, timeout));
         }

@@ -5,6 +5,7 @@ interface Config {
     telegramToken: string;
     telegramSourceChannelId: string;
     telegramTargetGroupId: string;
+    updatePublishingDetailsFunctionName: string;
     videoDownloadedTopicArn: string;
     sceneRecognisedTopicArn: string;
     retriesMax: string;
@@ -24,6 +25,9 @@ if (!config.telegramSourceChannelId) {
 }
 if (!config.telegramTargetGroupId) {
     throw new Error('telegramTargetGroupId is required');
+}
+if (!config.updatePublishingDetailsFunctionName) {
+    throw new Error('updatePublishingDetailsFunctionName is required');
 }
 if (!config.videoDownloadedTopicArn) {
     throw new Error('videoDownloadedTopicArn is required');
