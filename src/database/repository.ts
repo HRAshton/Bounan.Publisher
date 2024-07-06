@@ -4,13 +4,12 @@ import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@
 import { PublishedAnimeEntity, RegisteredAnimeEntity } from './entities/published-anime-entity';
 import { config } from '../config/config';
 import { EpisodeMessageInfoEntity } from './entities/episode-message-info-entity';
-import { HeaderMessageInfoEntity } from './entities/header-message-info-entity';
 import { AnimeLockedError } from '../errors/anime-locked-error';
 
 const dynamoDbClient = new DynamoDBClient();
-const docClient = DynamoDBDocumentClient.from(dynamoDbClient);
+export const docClient = DynamoDBDocumentClient.from(dynamoDbClient);
 
-const getTableKey = (animeKey: AnimeKey): string => {
+export const getTableKey = (animeKey: AnimeKey): string => {
     return `${animeKey.myAnimeListId}#${animeKey.dub}`;
 }
 
@@ -73,31 +72,6 @@ export const getOrRegisterAnimeAndLock = async (
     }));
 
     return anime;
-}
-
-export const setHeaderAndFirstEpisodeUnlock = async (
-    anime: AnimeKey,
-    threadId: number,
-    headerPostInfo: HeaderMessageInfoEntity,
-    episode: number,
-    episodePostInfo: EpisodeMessageInfoEntity,
-): Promise<void> => {
-    const command = new UpdateCommand({
-        TableName: config.database.tableName,
-        Key: { AnimeKey: getTableKey(anime) },
-        ConditionExpression: 'attribute_exists(AnimeKey)',
-        UpdateExpression: 'SET threadId = :threadId, headerPost = :headerPost, episodes = :episodes, updatedAt = :updatedAt REMOVE Locked',
-        ExpressionAttributeValues: {
-            ':threadId': threadId,
-            ':headerPost': headerPostInfo,
-            ':episodes': {
-                [episode]: episodePostInfo,
-            },
-            ':updatedAt': new Date().toISOString(),
-        },
-    });
-
-    await docClient.send(command);
 }
 
 export const upsertEpisodesAndUnlock = async (

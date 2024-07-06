@@ -20,16 +20,15 @@ export class Stack extends AwsStack {
         const errorsLogGroup = this.createLogGroup();
         this.SetErrorsAlarm(errorsLogGroup);
 
-        const lambdaVideo = this.createVideoLambda(table, errorsLogGroup);
-        table.grantReadWriteData(lambdaVideo);
-        this.AttachDownloadedSnsEvent(lambdaVideo);
-
-        const scenesLambda = this.createScenesLambda(table, errorsLogGroup);
-        table.grantReadWriteData(scenesLambda);
-        this.AttachRecognisedSnsEvent(scenesLambda);
+        const lambdas = this.createLambdas(table, errorsLogGroup);
+        this.AttachDownloadedSnsEvent(lambdas.get(LambdaHandler.OnVideoDownloaded)!);
+        this.AttachRecognisedSnsEvent(lambdas.get(LambdaHandler.OnScenesRecognised)!);
 
         this.out('config', config);
         this.out('tableName', table.tableName);
+        this.out('local-config', Object.entries(this.getEnvVars(table))
+            .map(([key, value]) => `process.env.${key} = '${value}';`)
+            .join(''));
     }
 
     private createDatabase(): dynamodb.Table {
@@ -66,24 +65,22 @@ export class Stack extends AwsStack {
         alarm.addAlarmAction(new cloudwatchActions.SnsAction(topic));
     }
 
-    private createVideoLambda(table: dynamodb.Table, errorsLogGroup: logs.LogGroup): lambda.Function {
-        return new LlrtFunction(this, 'VideoLambdaFunction', {
-            entry: 'src/video-handler.ts',
-            handler: 'videoHandler',
-            logGroup: errorsLogGroup,
-            environment: this.getEnvVars(table),
-            timeout: Duration.seconds(30),
-        });
-    }
+    private createLambdas(table: dynamodb.Table, errorsLogGroup: logs.LogGroup): Map<LambdaHandler, lambda.Function> {
+        const functions = new Map<LambdaHandler, lambda.Function>();
+        Object.entries(LambdaHandler).forEach(([lambdaName, handlerName]) => {
+            const func = new LlrtFunction(this, lambdaName, {
+                entry: `src/handlers/${handlerName}/handler.ts`,
+                handler: 'handler',
+                logGroup: errorsLogGroup,
+                environment: this.getEnvVars(table),
+                timeout: Duration.seconds(30),
+            });
 
-    private createScenesLambda(table: dynamodb.Table, errorsLogGroup: logs.LogGroup): lambda.Function {
-        return new LlrtFunction(this, 'ScenesLambdaFunction', {
-            entry: 'src/scenes-handler.ts',
-            handler: 'scenesHandler',
-            logGroup: errorsLogGroup,
-            environment: this.getEnvVars(table),
-            timeout: Duration.seconds(30),
+            table.grantReadWriteData(func);
+            functions.set(handlerName, func);
         });
+
+        return functions;
     }
 
     private AttachDownloadedSnsEvent(lambda: lambda.Function): void {
@@ -110,4 +107,9 @@ export class Stack extends AwsStack {
     private out(name: string, value: unknown): void {
         new CfnOutput(this, name, { value: JSON.stringify(value) });
     }
+}
+
+enum LambdaHandler {
+    OnVideoDownloaded = 'on-video-downloaded',
+    OnScenesRecognised = 'on-scenes-recognised',
 }

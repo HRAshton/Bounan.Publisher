@@ -1,9 +1,8 @@
-﻿import { Context } from 'node:vm';
-import { SNSEvent, SNSHandler } from 'aws-lambda';
-import { fromJson } from './models/notifications/video-downloaded-notification';
-import { processNewEpisode } from './services/message-processing-service';
-import { client_setClientToken } from 'telegram-bot-api-lightweight-client/src/core';
-import { config } from './config/config';
+﻿import { client_setClientToken } from 'telegram-bot-api-lightweight-client/src/core';
+import { config } from '../../config/config';
+import { fromJson } from './models';
+import { Context, SNSEvent } from 'aws-lambda';
+import { processNewEpisode } from './processor';
 
 client_setClientToken(config.telegram.token);
 
@@ -17,8 +16,10 @@ const processMessage = async (message: string): Promise<void> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const videoHandler = async (event: SNSEvent, context: Context): Promise<void> => {
+export const handler = async (event: SNSEvent, context: Context): Promise<void> => {
+    console.log('Processing event: ', event);
     for (const record of event.Records) {
+        console.log('Processing record: ', record?.Sns?.MessageId);
         await processMessage(record.Sns.Message);
     }
 

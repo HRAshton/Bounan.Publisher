@@ -1,11 +1,11 @@
-﻿import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
-import { PublishedAnime } from '../models/published-anime';
-import { config } from '../config/config';
-import { hashCode } from '../utils/hash';
+﻿import { VideoDownloadedNotification } from '../../handlers/on-video-downloaded/models';
+import { PublishedAnime } from '../../models/published-anime';
+import { config } from '../../config/config';
+import { hashCode } from '../../utils/hash';
 import { PublishingResult } from './models/publishing-result';
 import { EpisodeMessageInfo } from './models/message-info';
-import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../utils/post-maker';
-import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
+import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../../utils/post-maker';
+import { ShikiAnimeInfo } from '../shikimori/shiki-anime-info';
 import {
     createForumTopic,
     copyMessages,
@@ -14,8 +14,8 @@ import {
     sendPhoto,
     copyMessage,
 } from 'telegram-bot-api-lightweight-client/src/client';
-import { SHIKIMORI_BASE_URL } from '../shikimori-client/shikimori-client';
-import { PublishedAnimeEntity } from '../database/entities/published-anime-entity';
+import { SHIKIMORI_BASE_URL } from '../shikimori/shikimori-client';
+import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 
 const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<EpisodeMessageInfo[]> => {
     console.log('Reordering episodes for anime: ', anime);

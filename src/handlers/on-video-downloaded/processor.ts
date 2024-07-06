@@ -1,17 +1,13 @@
-﻿import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
-import {
-    getOrRegisterAnimeAndLock,
-    setHeaderAndFirstEpisodeUnlock, unlock,
-    upsertEpisodesAndUnlock,
-} from '../database/repository';
-import { PublishedAnimeEntity } from '../database/entities/published-anime-entity';
-import { publishAnime, publishEpisode } from '../telegram/telegram-service';
-import { getAnimeInfo } from '../shikimori-client/shikimori-client';
-import { config } from '../config/config';
-import { AnimeLockedError } from '../errors/anime-locked-error';
+﻿import { VideoDownloadedNotification } from './models';
+import { getAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
+import { publishAnime, publishEpisode } from '../../api-clients/telegram/telegram-service';
+import { getOrRegisterAnimeAndLock, unlock, upsertEpisodesAndUnlock } from '../../database/repository';
+import { setHeaderAndFirstEpisodeUnlock } from './repository';
+import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
+import { config } from '../../config/config';
+import { AnimeLockedError } from '../../errors/anime-locked-error';
 import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 
-// Creates a new topic for the anime, publishes the header message and the first episode
 const createTopic = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
     const animeInfo = await getAnimeInfo(publishingRequest.videoKey.myAnimeListId);
     console.log('Got anime info');

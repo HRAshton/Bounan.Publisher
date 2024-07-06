@@ -5,6 +5,7 @@
     "telegramTargetGroupId": "",
     "videoDownloadedTopicArn": "",
     "sceneRecognisedTopicArn": "",
+    "updatePublishingDetailsFunctionName": "",
     "retriesMax": "3",
     "retriesDelayMs": "2000",
     "DUMMY": ""

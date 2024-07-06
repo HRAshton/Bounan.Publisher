@@ -1,8 +1,8 @@
-﻿import { ShikiAnimeInfo } from '../shikimori-client/shiki-anime-info';
+﻿import { ShikiAnimeInfo } from '../api-clients/shikimori/shiki-anime-info';
 import { secToTime } from './sec-to-time';
-import { VideoDownloadedNotification } from '../models/notifications/video-downloaded-notification';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
 import { KeysToCamelCase } from './object-transformer';
+import { VideoDownloadedNotification } from '../handlers/on-video-downloaded/models';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
@@ -15,7 +15,7 @@ export const createTextForTopicName = (
     return [
         animeInfo.russian || animeInfo.name,
         publishingRequest.videoKey.dub,
-        animeInfo.aired_on?.substring(0, 4)
+        animeInfo.aired_on?.substring(0, 4),
     ]
         .filter(Boolean)
         .join(' | ');
@@ -67,7 +67,7 @@ export const createTextForEpisodePost = (
         && `${secToTime(publishingRequest.scenes.opening.end)} - Конец опенинга (от ${secToTime(publishingRequest.scenes.opening.start)})`,
 
         publishingRequest.scenes?.sceneAfterEnding
-        && `${secToTime(publishingRequest.scenes.sceneAfterEnding.start)} - Сцена-после-титров`
+        && `${secToTime(publishingRequest.scenes.sceneAfterEnding.start)} - Сцена-после-титров`,
     ]
         .filter(Boolean)
         .join('\n');
