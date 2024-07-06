@@ -1,5 +1,4 @@
 ﻿import { VideoDownloadedNotification } from '../../handlers/on-video-downloaded/models';
-import { PublishedAnime } from '../../models/published-anime';
 import { config } from '../../config/config';
 import { hashCode } from '../../utils/hash';
 import { PublishingResult } from './models/publishing-result';
@@ -17,10 +16,14 @@ import {
 import { SHIKIMORI_BASE_URL } from '../shikimori/shikimori-client';
 import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 
-const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<EpisodeMessageInfo[]> => {
-    console.log('Reordering episodes for anime: ', anime);
+const reorderEpisodes = async (
+    threadId: number,
+    publishedEpisodes: PublishedAnimeEntity['episodes'],
+    episode: number,
+): Promise<EpisodeMessageInfo[]> => {
+    console.log('Reordering episodes for anime: ', publishedEpisodes);
 
-    const episodesToForward = Object.values(anime.episodes)
+    const episodesToForward = Object.values(publishedEpisodes)
         .filter(x => x.episode > episode)
         .sort((a, b) => a.episode - b.episode);
     console.log('Episodes to forward: ', episodesToForward);
@@ -33,7 +36,7 @@ const reorderEpisodes = async (anime: PublishedAnime, episode: number): Promise<
         chat_id: config.telegram.targetGroupId,
         from_chat_id: config.telegram.targetGroupId,
         message_ids: messagesToForward,
-        message_thread_id: anime.threadId,
+        message_thread_id: threadId,
         disable_notification: true,
     });
     console.log('Forwarded messages: ', forwardedMessages);
@@ -77,13 +80,10 @@ const sendSingleEpisodeInternal = async (
     };
 }
 
-export const publishAnime = async (
-    publishingRequest: Required<VideoDownloadedNotification>,
-    animeInfo: ShikiAnimeInfo,
-): Promise<PublishingResult> => {
+export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
         chat_id: config.telegram.targetGroupId,
-        name: createTextForTopicName(animeInfo, publishingRequest),
+        name: createTextForTopicName(animeInfo, dub),
     });
     const threadId = createdTopic.result.message_thread_id;
     if (!createdTopic.ok) {
@@ -91,7 +91,7 @@ export const publishAnime = async (
     }
 
     // Telegram has a limit of 1024 characters for the caption
-    const firstPostText = createTextForHeaderPost(animeInfo, publishingRequest).substring(0, 1024);
+    const firstPostText = createTextForHeaderPost(animeInfo, dub).substring(0, 1024);
     const firstPost = await sendPhoto({
         chat_id: config.telegram.targetGroupId,
         photo: SHIKIMORI_BASE_URL + animeInfo.image.original,
@@ -103,26 +103,23 @@ export const publishAnime = async (
         throw new Error(JSON.stringify(firstPost));
     }
 
-    const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, threadId);
-
     return {
-        episode: publishingRequest.videoKey.episode,
         threadId: threadId,
         headerMessageInfo: {
             messageId: firstPost.result.message_id,
             hash: hashCode(firstPostText),
         },
-        episodeMessageInfo,
     }
 }
 
 export const publishEpisode = async (
     publishingRequest: Required<VideoDownloadedNotification>,
     animeInfo: ShikiAnimeInfo,
-    anime: PublishedAnime,
+    threadId: number,
+    publishedEpisodes: PublishedAnimeEntity['episodes'],
 ): Promise<EpisodeMessageInfo[]> => {
-    const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, anime.threadId);
-    const forwardedMessages = await reorderEpisodes(anime, publishingRequest.videoKey.episode);
+    const episodeMessageInfo = await sendSingleEpisodeInternal(publishingRequest, animeInfo, threadId);
+    const forwardedMessages = await reorderEpisodes(threadId, publishedEpisodes, publishingRequest.videoKey.episode);
 
     return [
         episodeMessageInfo,

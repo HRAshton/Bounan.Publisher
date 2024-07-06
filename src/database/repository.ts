@@ -75,12 +75,13 @@ export const getOrRegisterAnimeAndLock = async (
 }
 
 export const upsertEpisodesAndUnlock = async (
-    originalValue: PublishedAnimeEntity,
+    animeKey: AnimeKey,
+    originalEpisodes: PublishedAnimeEntity['episodes'],
     newEpisodes: { [episode: number]: EpisodeMessageInfoEntity },
 ): Promise<void> => {
     const command = new UpdateCommand({
         TableName: config.database.tableName,
-        Key: { AnimeKey: getTableKey(originalValue) },
+        Key: { AnimeKey: getTableKey(animeKey) },
         ConditionExpression: 'attribute_exists(AnimeKey)',
         UpdateExpression: 'SET #episodes = :episodes, updatedAt = :updatedAt REMOVE Locked',
         ExpressionAttributeNames: {
@@ -88,7 +89,7 @@ export const upsertEpisodesAndUnlock = async (
         },
         ExpressionAttributeValues: {
             ':episodes': {
-                ...originalValue.episodes,
+                ...originalEpisodes,
                 ...newEpisodes,
             },
             ':updatedAt': new Date().toISOString(),

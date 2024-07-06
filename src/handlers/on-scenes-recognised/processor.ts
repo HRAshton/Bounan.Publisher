@@ -42,7 +42,7 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
             ...publishedAnime.episodes[x.episode],
             hash: hashCode(x.caption),
         }]));
-    await upsertEpisodesAndUnlock(publishedAnime, updatedEpisodes);
+    await upsertEpisodesAndUnlock(publishedAnime, publishedAnime.episodes, updatedEpisodes);
     console.log('Episodes upserted');
 };
 

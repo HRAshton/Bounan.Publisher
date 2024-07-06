@@ -4,10 +4,10 @@
     "description": "",
     "scripts": {
         "run-local": "tsx src/local-runner.ts",
+        "ts": "tsc --noEmit",
         "lint": "eslint . --ext .ts",
         "lint-fix": "eslint . --ext .ts --fix",
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-        "ts": "tsc --noEmit"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
     "keywords": [],
     "author": {

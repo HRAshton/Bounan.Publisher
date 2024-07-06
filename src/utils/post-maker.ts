@@ -2,29 +2,22 @@
 import { secToTime } from './sec-to-time';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
 import { KeysToCamelCase } from './object-transformer';
-import { VideoDownloadedNotification } from '../handlers/on-video-downloaded/models';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
 }
 
-export const createTextForTopicName = (
-    animeInfo: ShikiAnimeInfo,
-    publishingRequest: VideoDownloadedNotification,
-): string => {
+export const createTextForTopicName = (animeInfo: ShikiAnimeInfo, dub: string): string => {
     return [
         animeInfo.russian || animeInfo.name,
-        publishingRequest.videoKey.dub,
+        dub,
         animeInfo.aired_on?.substring(0, 4),
     ]
         .filter(Boolean)
         .join(' | ');
 }
 
-export const createTextForHeaderPost = (
-    animeInfo: ShikiAnimeInfo,
-    publishingRequest: VideoDownloadedNotification,
-): string => {
+export const createTextForHeaderPost = (animeInfo: ShikiAnimeInfo, dub: string): string => {
     const genres = animeInfo.genres
         ?.map(genre => genre.russian)
         .filter(genre => genre)
@@ -43,7 +36,7 @@ export const createTextForHeaderPost = (
 
     return [
         `<b>${animeInfo.russian || animeInfo.name}</b>`,
-        publishingRequest.videoKey.dub && `В озвучке ${escapeLinks(publishingRequest.videoKey.dub)}`,
+        dub && `В озвучке ${escapeLinks(dub)}`,
         animeInfo.aired_on && `Год выпуска: ${animeInfo.aired_on.substring(0, 4)}`,
         genres && `Жанры: ${genres}`,
         animeInfo.franchise && `Франшиза: #${animeInfo.franchise}`,
