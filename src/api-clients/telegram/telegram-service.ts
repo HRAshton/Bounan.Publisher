@@ -137,6 +137,10 @@ export const updateEpisodeMessages = async (
     console.log('Updating info');
 
     for (const captionToUpdate of captionsToUpdate) {
+        if (captionsToUpdate.length > 20) {
+            await new Promise(resolve => setTimeout(resolve, 1000 / 29));
+        }
+        
         console.log('Updating caption: ', captionToUpdate);
         const episode = publishedAnime.episodes[captionToUpdate.episode];
         console.log('Episode: ', episode);
