@@ -38,6 +38,8 @@ export class Stack extends AwsStack {
     private createDatabase(): dynamodb.Table {
         return new dynamodb.Table(this, 'Table', {
             partitionKey: { name: 'AnimeKey', type: dynamodb.AttributeType.STRING },
+            readCapacity: 1,
+            writeCapacity: 1,
         });
     }
 
