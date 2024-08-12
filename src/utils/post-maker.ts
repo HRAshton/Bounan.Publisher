@@ -52,9 +52,12 @@ export const createTextForEpisodePost = (
     animeInfo: ShikiAnimeInfo,
     publishingRequest: KeysToCamelCase<SceneRecognisedNotificationItem>,
 ): string => {
+    const has_episodes = animeInfo.episodes && animeInfo.episodes > 1
+        || animeInfo.episodes_aired && animeInfo.episodes_aired > 1;
+
     return [
         `<b>${animeInfo.russian || animeInfo.name}</b> ${publishingRequest.videoKey.dub && `(${escapeLinks(publishingRequest.videoKey.dub)})`}`,
-        animeInfo.episodes && animeInfo.episodes > 1 && `Серия ${publishingRequest.videoKey.episode}`,
+        has_episodes && `Серия ${publishingRequest.videoKey.episode}`,
 
         publishingRequest.scenes?.opening
         && `${secToTime(publishingRequest.scenes.opening.end)} - Конец опенинга (от ${secToTime(publishingRequest.scenes.opening.start)})`,
