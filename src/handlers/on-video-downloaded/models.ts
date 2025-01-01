@@ -1,6 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
+﻿import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
 import { VideoDownloadedNotification as RawVideoDownloadedNotification } from '../../common/ts/interfaces';
 
 export type VideoDownloadedNotification = KeysToCamelCase<RawVideoDownloadedNotification>;
