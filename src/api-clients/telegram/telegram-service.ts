@@ -12,7 +12,7 @@ import {
     deleteMessages,
     sendPhoto,
     copyMessage,
-} from 'telegram-bot-api-lightweight-client/src/client';
+} from 'telegram-bot-api-lightweight-client';
 import { SHIKIMORI_BASE_URL } from '../shikimori/shikimori-client';
 import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 

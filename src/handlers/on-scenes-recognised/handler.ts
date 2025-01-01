@@ -1,4 +1,4 @@
-﻿import { client_setClientToken } from 'telegram-bot-api-lightweight-client/src/core';
+﻿import { client_setClientToken } from 'telegram-bot-api-lightweight-client';
 import { config } from '../../config/config';
 import { fromJson } from './models';
 import { Context, SNSEvent } from 'aws-lambda';
