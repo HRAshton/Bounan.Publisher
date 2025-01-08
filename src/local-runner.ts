@@ -29,6 +29,7 @@ const sc = async (message: SceneRecognisedNotification) => {
 
 const main = async () => {
     const myAnimeListId = 1;
+    const sourceChannelMessageId = 186;
 
     await ep({
         VideoKey: {
@@ -36,7 +37,7 @@ const main = async () => {
             Dub: 'AniLibria.TV',
             Episode: 1,
         },
-        MessageId: 63,
+        MessageId: sourceChannelMessageId,
         Scenes: {
             Opening: { Start: 90, End: 180 },
             Ending: { Start: 300, End: 320 },
@@ -50,7 +51,7 @@ const main = async () => {
             Dub: 'AniLibria.TV',
             Episode: 3,
         },
-        MessageId: 63,
+        MessageId: sourceChannelMessageId,
         Scenes: {
             Opening: { Start: 90, End: 180 },
             Ending: { Start: 300, End: 320 },
@@ -63,7 +64,7 @@ const main = async () => {
             Dub: 'AniLibria.TV',
             Episode: 4,
         },
-        MessageId: 63,
+        MessageId: sourceChannelMessageId,
     });
 
     await ep({
@@ -72,7 +73,7 @@ const main = async () => {
             Dub: 'AniLibria.TV',
             Episode: 2,
         },
-        MessageId: 63,
+        MessageId: sourceChannelMessageId,
         Scenes: {
             Ending: { Start: 300, End: 320 },
             SceneAfterEnding: { Start: 320, End: 400 },
@@ -85,7 +86,7 @@ const main = async () => {
             Dub: 'AniLibria.TV',
             Episode: 1,
         },
-        MessageId: 63,
+        MessageId: sourceChannelMessageId,
         Scenes: {
             Ending: { Start: 300, End: 320 },
             SceneAfterEnding: { Start: 320, End: 400 },

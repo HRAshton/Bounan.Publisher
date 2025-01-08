@@ -1,11 +1,11 @@
-﻿// process.env.AWS_PROFILE='';
+﻿// process.env.AWS_PROFILE = '';
 // process.env.DATABASE_TABLE_NAME = '';
 // process.env.TELEGRAM_TOKEN = '';
 // process.env.TELEGRAM_SOURCE_CHANNEL_ID = '-';
 // process.env.TELEGRAM_TARGET_GROUP_ID = '-';
-// process.env.RETRIES_MAX = '';
-// process.env.RETRIES_DELAY_MS = '';
-// process.env.ANIMAN_UPDATE_PUBLISHING_DETAILS_FUNCTION_NAME='';
+// process.env.RETRIES_MAX = '1';
+// process.env.RETRIES_DELAY_MS = '2000';
+// process.env.ANIMAN_UPDATE_PUBLISHING_DETAILS_FUNCTION_NAME = '';
 
 const getEnv = (key: string): string => {
     const value = process.env[key];
