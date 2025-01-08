@@ -85,10 +85,11 @@ export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Prom
         chat_id: config.telegram.targetGroupId,
         name: createTextForTopicName(animeInfo, dub),
     });
-    const threadId = createdTopic.result.message_thread_id;
     if (!createdTopic.ok) {
         throw new Error(JSON.stringify(createdTopic));
     }
+
+    const threadId = createdTopic.result.message_thread_id;
 
     // Telegram has a limit of 1024 characters for the caption
     const firstPostText = createTextForHeaderPost(animeInfo, dub).substring(0, 1024);

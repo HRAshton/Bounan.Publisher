@@ -28,7 +28,11 @@ export const createTextForHeaderPost = (animeInfo: ShikiAnimeInfo, dub: string):
     const allNamesSet = new Set([animeInfo.name, animeInfo.license_name_ru]);
     animeInfo.english?.forEach(name => allNamesSet.add(name));
     animeInfo.synonyms?.forEach(name => allNamesSet.add(name));
-    const otherNames = Array.from(allNamesSet).sort().join('; ');
+    const otherNames = Array.from(allNamesSet)
+        .filter(name => !!name)
+        .map(name => name!.replaceAll('>', '&gt;').replaceAll('<', '&lt;'))
+        .sort()
+        .join('; ');
 
     const hashtag = animeInfo.url
         ?.replace(/^[^-]+-/, '')
