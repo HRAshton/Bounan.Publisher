@@ -1,6 +1,9 @@
-﻿import configFile from './configuration.json';
+﻿import * as cdk from 'aws-cdk-lib';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { ExportNames } from '../src/common/ts/cdk/export-names';
+import configFile from './configuration.json';
 
-interface Config {
+export interface Config {
     alertEmail: string;
     telegramToken: string;
     telegramSourceChannelId: string;
@@ -12,32 +15,25 @@ interface Config {
     retriesDelayMs: string;
 }
 
-export const config: Config = configFile;
+const getCfnValue = (key: keyof Config, prefix: string, exportSuffix: ExportNames): string => {
+    return configFile[key] || cdk.Fn.importValue(prefix + exportSuffix);
+}
 
-if (!config.alertEmail) {
-    throw new Error('errorAlarmEmail is required');
+const getSsmValue = (stack: cdk.Stack, prefix: string, parameterSuffix: keyof Config): string => {
+    return configFile[parameterSuffix] || ssm.StringParameter.valueForStringParameter(stack, prefix + parameterSuffix);
 }
-if (!config.telegramToken) {
-    throw new Error('telegramToken is required');
-}
-if (!config.telegramSourceChannelId) {
-    throw new Error('telegramSourceChannelId is required');
-}
-if (!config.telegramTargetGroupId) {
-    throw new Error('telegramTargetGroupId is required');
-}
-if (!config.updatePublishingDetailsFunctionName) {
-    throw new Error('updatePublishingDetailsFunctionName is required');
-}
-if (!config.videoDownloadedTopicArn) {
-    throw new Error('videoDownloadedTopicArn is required');
-}
-if (!config.sceneRecognisedTopicArn) {
-    throw new Error('sceneRecognisedTopicArn is required');
-}
-if (!config.retriesMax) {
-    throw new Error('retriesMax is required');
-}
-if (!config.retriesDelayMs) {
-    throw new Error('retriesDelayMs is required');
-}
+
+export const getConfig = (stack: cdk.Stack, cfnPrefix: string, ssmPrefix: string): Config => ({
+    alertEmail: getCfnValue('alertEmail', cfnPrefix, ExportNames.AlertEmail),
+
+    telegramToken: getSsmValue(stack, ssmPrefix, 'telegramToken'),
+    telegramSourceChannelId: getSsmValue(stack, ssmPrefix, 'telegramSourceChannelId'),
+    telegramTargetGroupId: getSsmValue(stack, ssmPrefix, 'telegramTargetGroupId'),
+
+    updatePublishingDetailsFunctionName: getCfnValue('updatePublishingDetailsFunctionName', cfnPrefix, ExportNames.UpdatePublishingDetailsFunctionName),
+    videoDownloadedTopicArn: getCfnValue('videoDownloadedTopicArn', cfnPrefix, ExportNames.VideoDownloadedSnsTopicArn),
+    sceneRecognisedTopicArn: getCfnValue('sceneRecognisedTopicArn', cfnPrefix, ExportNames.SceneRecognisedSnsTopicArn),
+
+    retriesMax: getSsmValue(stack, ssmPrefix, 'retriesMax'),
+    retriesDelayMs: getSsmValue(stack, ssmPrefix, 'retriesDelayMs'),
+});

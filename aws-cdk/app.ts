@@ -1,11 +1,11 @@
 import { App as AwsApp } from 'aws-cdk-lib';
-import { Stack } from './stack';
+import { PublisherStack } from './publisher-stack';
 
 class App extends AwsApp {
     constructor() {
         super();
 
-        new Stack(this, 'Bounan-Publisher', {});
+        new PublisherStack(this, 'Bounan-Publisher', {});
     }
 }
 
