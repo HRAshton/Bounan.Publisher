@@ -32,7 +32,7 @@ export const updatePublishingDetails = async (
     console.log('Sending request: ', message);
 
     const result = await lambdaClient.send(new InvokeCommand({
-        FunctionName: config.animan.updatePublishingDetailsFunctionName,
+        FunctionName: config.value.animan.updatePublishingDetailsFunctionName,
         Payload: message,
     }));
     console.log('Request sent: ', result);

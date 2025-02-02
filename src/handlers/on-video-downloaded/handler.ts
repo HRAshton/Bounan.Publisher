@@ -1,10 +1,8 @@
 ﻿import { client_setClientToken } from 'telegram-bot-api-lightweight-client';
-import { config } from '../../config/config';
+import { config, initConfig } from '../../config/config';
 import { fromJson } from './models';
 import { Context, SNSEvent } from 'aws-lambda';
 import { processNewEpisode } from './processor';
-
-client_setClientToken(config.telegram.token);
 
 const processMessage = async (message: string): Promise<void> => {
     console.log('Processing message: ', message);
@@ -18,6 +16,10 @@ const processMessage = async (message: string): Promise<void> => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler = async (event: SNSEvent, context: Context): Promise<void> => {
     console.log('Processing event: ', event);
+
+    await initConfig();
+    client_setClientToken(config.value.telegram.token);
+
     for (const record of event.Records) {
         console.log('Processing record: ', record?.Sns?.MessageId);
         await processMessage(record.Sns.Message);

@@ -33,8 +33,8 @@ const reorderEpisodes = async (
 
     const messagesToForward = episodesToForward.map(x => x.messageId);
     const forwardedMessages = await copyMessages({
-        chat_id: config.telegram.targetGroupId,
-        from_chat_id: config.telegram.targetGroupId,
+        chat_id: config.value.telegram.targetGroupId,
+        from_chat_id: config.value.telegram.targetGroupId,
         message_ids: messagesToForward,
         message_thread_id: threadId,
         disable_notification: true,
@@ -42,7 +42,7 @@ const reorderEpisodes = async (
     console.log('Forwarded messages: ', forwardedMessages);
 
     await deleteMessages({
-        chat_id: config.telegram.targetGroupId,
+        chat_id: config.value.telegram.targetGroupId,
         message_ids: messagesToForward,
     });
     console.log('Deleted messages');
@@ -61,8 +61,8 @@ const sendSingleEpisodeInternal = async (
 ): Promise<EpisodeMessageInfo> => {
     const caption = createTextForEpisodePost(animeInfo, publishingRequest);
     const episodeMessage = await copyMessage({
-        chat_id: config.telegram.targetGroupId,
-        from_chat_id: config.telegram.sourceChannelId,
+        chat_id: config.value.telegram.targetGroupId,
+        from_chat_id: config.value.telegram.sourceChannelId,
         message_id: publishingRequest.messageId,
         caption,
         message_thread_id: threadId,
@@ -82,7 +82,7 @@ const sendSingleEpisodeInternal = async (
 
 export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
-        chat_id: config.telegram.targetGroupId,
+        chat_id: config.value.telegram.targetGroupId,
         name: createTextForTopicName(animeInfo, dub),
     });
     if (!createdTopic.ok) {
@@ -94,7 +94,7 @@ export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Prom
     // Telegram has a limit of 1024 characters for the caption
     const firstPostText = createTextForHeaderPost(animeInfo, dub).substring(0, 1024);
     const firstPost = await sendPhoto({
-        chat_id: config.telegram.targetGroupId,
+        chat_id: config.value.telegram.targetGroupId,
         photo: SHIKIMORI_BASE_URL + animeInfo.image.original,
         caption: firstPostText,
         message_thread_id: threadId,
@@ -147,7 +147,7 @@ export const updateEpisodeMessages = async (
         console.log('Episode: ', episode);
 
         const result = await editMessageCaption({
-            chat_id: config.telegram.targetGroupId,
+            chat_id: config.value.telegram.targetGroupId,
             message_id: episode.messageId,
             caption: captionToUpdate.caption,
             parse_mode: 'HTML',

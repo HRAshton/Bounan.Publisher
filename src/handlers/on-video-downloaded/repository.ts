@@ -10,7 +10,7 @@ export const setHeader = async (
     headerPostInfo: HeaderMessageInfoEntity,
 ): Promise<void> => {
     const command = new UpdateCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Key: { AnimeKey: getTableKey(anime) },
         ConditionExpression: 'attribute_exists(AnimeKey)',
         UpdateExpression: 'SET threadId = :threadId, headerPost = :headerPost, updatedAt = :updatedAt',

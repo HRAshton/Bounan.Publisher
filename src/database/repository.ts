@@ -15,7 +15,7 @@ export const getTableKey = (animeKey: AnimeKey): string => {
 
 const lock = async (key: AnimeKey): Promise<void> => {
     await docClient.send(new UpdateCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Key: { AnimeKey: getTableKey(key) },
         ConditionExpression: 'attribute_exists(AnimeKey) AND attribute_not_exists(Locked)',
         UpdateExpression: 'SET Locked = :locked',
@@ -27,7 +27,7 @@ const lock = async (key: AnimeKey): Promise<void> => {
 
 export const unlock = async (key: AnimeKey): Promise<void> => {
     await docClient.send(new UpdateCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Key: { AnimeKey: getTableKey(key) },
         ConditionExpression: 'attribute_exists(AnimeKey) AND Locked = :locked',
         UpdateExpression: 'REMOVE Locked',
@@ -41,7 +41,7 @@ export const getOrRegisterAnimeAndLock = async (
     key: AnimeKey,
 ): Promise<PublishedAnimeEntity | RegisteredAnimeEntity> => {
     const command = new GetCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Key: { AnimeKey: getTableKey(key) },
     });
 
@@ -62,7 +62,7 @@ export const getOrRegisterAnimeAndLock = async (
     };
 
     await docClient.send(new PutCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Item: {
             ...anime,
             AnimeKey: getTableKey(key),
@@ -80,7 +80,7 @@ export const upsertEpisodesAndUnlock = async (
     newEpisodes: { [episode: number]: EpisodeMessageInfoEntity },
 ): Promise<void> => {
     const command = new UpdateCommand({
-        TableName: config.database.tableName,
+        TableName: config.value.database.tableName,
         Key: { AnimeKey: getTableKey(animeKey) },
         ConditionExpression: 'attribute_exists(AnimeKey)',
         UpdateExpression: 'SET #episodes = :episodes, updatedAt = :updatedAt REMOVE Locked',

@@ -74,7 +74,7 @@ export const processNewEpisode = async (publishingRequest: VideoDownloadedNotifi
     }
 
     let totalRetries = 0;
-    while (totalRetries < config.retries.max) {
+    while (totalRetries < config.value.retries.max) {
         try {
             return await tryProcessNewEpisode(publishingRequest as Required<VideoDownloadedNotification>);
         } catch (e: unknown) {
@@ -84,13 +84,13 @@ export const processNewEpisode = async (publishingRequest: VideoDownloadedNotifi
                 await unlock(publishingRequest.videoKey);
             }
 
-            if (totalRetries === config.retries.max - 1) {
+            if (totalRetries === config.value.retries.max - 1) {
                 console.error('Failed to process anime, no retries left', e);
                 throw e;
             }
 
             totalRetries++;
-            const timeout = totalRetries * config.retries.delayMs + Math.random() * 1000;
+            const timeout = totalRetries * config.value.retries.delayMs + Math.random() * 1000;
             await new Promise(resolve => setTimeout(resolve, timeout));
         }
     }
