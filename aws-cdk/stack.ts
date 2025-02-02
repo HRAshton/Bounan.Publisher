@@ -26,14 +26,13 @@ export class Stack extends cfn.Stack {
 
         const table = this.createDatabase();
         const errorsLogGroup = this.createLogGroup();
-        const lambdas = this.createLambdas(table, errorsLogGroup);
+        const parameter = this.saveParameters(table, config);
+        const lambdas = this.createLambdas(table, errorsLogGroup, parameter);
         this.SetErrorsAlarm(errorsLogGroup, config);
 
         this.subscribeLambdaToTopic(LambdaHandler.OnVideoDownloaded, lambdas, config.videoDownloadedTopicArn);
         this.subscribeLambdaToTopic(LambdaHandler.OnScenesRecognised, lambdas, config.sceneRecognisedTopicArn);
         updatePublishingDetailsLambda.grantInvoke(lambdas[LambdaHandler.OnVideoDownloaded]);
-
-        this.saveParameters(table, config);
 
         this.out('Config', config);
     }
@@ -78,6 +77,7 @@ export class Stack extends cfn.Stack {
     private createLambdas(
         table: dynamodb.Table,
         errorsLogGroup: logs.LogGroup,
+        parameter: ssm.StringParameter,
     ): Record<LambdaHandler, lambda.Function> {
         // @ts-expect-error - we know that the keys are the same
         const functions: Record<LambdaHandler, lambda.Function> = {};
@@ -91,6 +91,7 @@ export class Stack extends cfn.Stack {
             });
 
             table.grantReadWriteData(func);
+            parameter.grantRead(func);
             functions[handlerName] = func;
         });
 
