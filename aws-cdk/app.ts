@@ -1,11 +1,11 @@
-import { App as AwsApp } from 'aws-cdk-lib';
-import { PublisherStack } from './publisher-stack';
+import * as cfn from 'aws-cdk-lib';
+import { Stack } from './stack';
 
-class App extends AwsApp {
+class App extends cfn.App {
     constructor() {
         super();
 
-        new PublisherStack(this, 'Bounan-Publisher', {});
+        new Stack(this, 'Bounan-Publisher', {});
     }
 }
 

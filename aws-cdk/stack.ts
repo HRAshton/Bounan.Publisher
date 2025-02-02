@@ -1,5 +1,6 @@
 ﻿import { Construct } from 'constructs';
 import { LlrtFunction } from 'cdk-lambda-llrt';
+
 import * as cfn from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
@@ -8,10 +9,13 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
-import { Config, getConfig } from './config';
 
-export class PublisherStack extends cfn.Stack {
+import { Config, getConfig } from './config';
+import { Config as RuntimeConfig } from '../src/config/config';
+
+export class Stack extends cfn.Stack {
     constructor(scope: Construct, id: string, props: cfn.StackProps) {
         super(scope, id, props);
 
@@ -28,6 +32,8 @@ export class PublisherStack extends cfn.Stack {
         this.subscribeLambdaToTopic(LambdaHandler.OnVideoDownloaded, lambdas, config.videoDownloadedTopicArn);
         this.subscribeLambdaToTopic(LambdaHandler.OnScenesRecognised, lambdas, config.sceneRecognisedTopicArn);
         updatePublishingDetailsLambda.grantInvoke(lambdas[LambdaHandler.OnVideoDownloaded]);
+
+        this.saveParameters(table, config);
 
         this.out('Config', config);
     }
@@ -97,6 +103,31 @@ export class PublisherStack extends cfn.Stack {
     ): void {
         const topic = sns.Topic.fromTopicArn(this, handler, topicArn);
         lambdas[handler].addEventSource(new lambdaEventSources.SnsEventSource(topic));
+    }
+
+    private saveParameters(table: dynamodb.Table, config: Config): ssm.StringParameter {
+        const value = {
+            animan: {
+                updatePublishingDetailsFunctionName: config.updatePublishingDetailsFunctionName,
+            },
+            telegram: {
+                token: config.telegramToken,
+                sourceChannelId: config.telegramSourceChannelId,
+                targetGroupId: config.telegramTargetGroupId,
+            },
+            database: {
+                tableName: table.tableName,
+            },
+            retries: {
+                max: cfn.Token.asNumber(config.retriesMax),
+                delayMs: cfn.Token.asNumber(config.retriesDelayMs),
+            },
+        } as Required<RuntimeConfig>;
+
+        return new ssm.StringParameter(this, '/bounan/publisher/runtime-config', {
+            parameterName: '/bounan/publisher/runtime-config',
+            stringValue: JSON.stringify(value, null, 2),
+        });
     }
 
     private out(key: string, value: object | string): void {
