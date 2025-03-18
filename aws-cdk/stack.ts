@@ -40,9 +40,9 @@ export class Stack extends cfn.Stack {
     private createDatabase(): dynamodb.Table {
         return new dynamodb.Table(this, 'Table', {
             partitionKey: { name: 'AnimeKey', type: dynamodb.AttributeType.STRING },
-            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            maxReadRequestUnits: 5,
-            maxWriteRequestUnits: 5,
+            billingMode: dynamodb.BillingMode.PROVISIONED,
+            readCapacity: 1,
+            writeCapacity: 1,
         });
     }
 
