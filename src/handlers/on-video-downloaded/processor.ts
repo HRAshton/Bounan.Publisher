@@ -1,7 +1,7 @@
 ﻿import { VideoDownloadedNotification } from './models';
 import { getAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { publishAnime, publishEpisode } from '../../api-clients/telegram/telegram-service';
-import { getOrRegisterAnimeAndLock, unlock, upsertEpisodesAndUnlock } from '../../database/repository';
+import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { setHeader } from './repository';
 import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 import { config } from '../../config/config';
@@ -36,35 +36,41 @@ const addEpisode = async (
     console.log('Published episode with message: ', messageInfos);
 
     const newEpisodes = Object.fromEntries(messageInfos.map(x => [x.episode, x]));
-    await upsertEpisodesAndUnlock(publishingRequest.videoKey, publishedEpisodes, newEpisodes);
+    await upsertEpisodes(publishingRequest.videoKey, publishedEpisodes, newEpisodes);
     console.log('Anime updated in database');
 
     return messageInfos;
 };
 
 const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedNotification>): Promise<void> => {
-    const anime = await getOrRegisterAnimeAndLock(publishingRequest.videoKey);
+    const publishedAnime = await getOrRegisterAnimeAndLock(publishingRequest.videoKey);
+    console.log('Anime retrieved: ', publishedAnime);
 
-    const episodeExists = 'episodes' in anime && !!anime.episodes?.[publishingRequest.videoKey.episode];
-    if (episodeExists) {
-        console.log('Episode already published, skipping');
-        await unlock(anime);
-        return;
+    try {
+        const episodeExists = 'episodes' in publishedAnime
+            && !!publishedAnime.episodes?.[publishingRequest.videoKey.episode];
+        if (episodeExists) {
+            console.log('Episode already published, skipping');
+            return;
+        }
+
+        const animeInfo = await getAnimeInfo(publishedAnime.myAnimeListId);
+        console.log('Got anime info');
+
+        const { threadId, episodes } = 'threadId' in publishedAnime
+            ? publishedAnime
+            : await createTopic(animeInfo, publishedAnime);
+
+        console.log('The topic was found in the database, adding episode');
+        const messageIds = await addEpisode(publishingRequest, animeInfo, threadId, episodes);
+        console.log('Episode added to the database: ' + JSON.stringify(messageIds));
+
+        await updatePublishingDetails(publishedAnime, threadId, messageIds);
+        console.log('Publishing details updated');
+    } finally {
+        await unlock(publishedAnime);
+        console.log('Anime unlocked');
     }
-
-    const animeInfo = await getAnimeInfo(anime.myAnimeListId);
-    console.log('Got anime info');
-
-    const { threadId, episodes } = 'threadId' in anime
-        ? anime
-        : await createTopic(animeInfo, anime);
-
-    console.log('The topic was found in the database, adding episode');
-    const messageIds = await addEpisode(publishingRequest, animeInfo, threadId, episodes);
-    console.log('Episode added to the database: ' + JSON.stringify(messageIds));
-
-    await updatePublishingDetails(anime, threadId, messageIds);
-    console.log('Publishing details updated');
 };
 
 export const processNewEpisode = async (publishingRequest: VideoDownloadedNotification): Promise<void> => {

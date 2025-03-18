@@ -1,7 +1,7 @@
 ﻿import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from './models';
 import { getAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { updateEpisodeMessages } from '../../api-clients/telegram/telegram-service';
-import { getOrRegisterAnimeAndLock, unlock, upsertEpisodesAndUnlock } from '../../database/repository';
+import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { EpisodeMessageInfoEntity } from '../../database/entities/episode-message-info-entity';
 import { hashCode } from '../../utils/hash';
 import { createTextForEpisodePost } from '../../utils/post-maker';
@@ -10,40 +10,43 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
     const publishedAnime = await getOrRegisterAnimeAndLock(notificationItems[0].videoKey);
     console.log('Anime retrieved: ', publishedAnime);
 
-    if (!('threadId' in publishedAnime)) {
-        console.log('The topic was not found in the database, skipping');
+    try {
+        if (!('threadId' in publishedAnime)) {
+            console.log('The topic was not found in the database, skipping');
+            return;
+        }
+
+        const animeInfo = await getAnimeInfo(publishedAnime.myAnimeListId);
+        console.log('Anime info retrieved');
+
+        const newCaptions = notificationItems.map(item => ({
+            episode: item.videoKey.episode,
+            caption: createTextForEpisodePost(animeInfo, item),
+        }));
+
+        const captionsToUpdate = newCaptions
+            .filter(x => !!publishedAnime.episodes[x.episode]
+                && publishedAnime.episodes[x.episode].hash !== hashCode(x.caption));
+        console.log(`Found ${captionsToUpdate.length} captions to update`);
+        if (!captionsToUpdate.length) {
+            console.log('No captions to update, skipping');
+            return;
+        }
+
+        await updateEpisodeMessages(publishedAnime, captionsToUpdate);
+        console.log('Captions updated');
+
+        const updatedEpisodes: { [episode: number]: EpisodeMessageInfoEntity } = Object.fromEntries(captionsToUpdate
+            .map(x => [x.episode, {
+                ...publishedAnime.episodes[x.episode],
+                hash: hashCode(x.caption),
+            }]));
+        await upsertEpisodes(publishedAnime, publishedAnime.episodes, updatedEpisodes);
+        console.log('Episodes upserted');
+    } finally {
         await unlock(publishedAnime);
-        return;
+        console.log('Anime unlocked');
     }
-
-    const animeInfo = await getAnimeInfo(publishedAnime.myAnimeListId);
-    console.log('Anime info retrieved');
-
-    const newCaptions = notificationItems.map(item => ({
-        episode: item.videoKey.episode,
-        caption: createTextForEpisodePost(animeInfo, item),
-    }));
-
-    const captionsToUpdate = newCaptions
-        .filter(x => !!publishedAnime.episodes[x.episode]
-            && publishedAnime.episodes[x.episode].hash !== hashCode(x.caption));
-    console.log(`Found ${captionsToUpdate.length} captions to update`);
-    if (!captionsToUpdate.length) {
-        console.log('No captions to update, skipping');
-        await unlock(publishedAnime);
-        return;
-    }
-
-    await updateEpisodeMessages(publishedAnime, captionsToUpdate);
-    console.log('Captions updated');
-
-    const updatedEpisodes: { [episode: number]: EpisodeMessageInfoEntity } = Object.fromEntries(captionsToUpdate
-        .map(x => [x.episode, {
-            ...publishedAnime.episodes[x.episode],
-            hash: hashCode(x.caption),
-        }]));
-    await upsertEpisodesAndUnlock(publishedAnime, publishedAnime.episodes, updatedEpisodes);
-    console.log('Episodes upserted');
 };
 
 export const processScenes = async (updatingRequests: SceneRecognisedNotification): Promise<void> => {
