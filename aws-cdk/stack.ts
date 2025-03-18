@@ -41,6 +41,7 @@ export class Stack extends cfn.Stack {
         return new dynamodb.Table(this, 'Table', {
             partitionKey: { name: 'AnimeKey', type: dynamodb.AttributeType.STRING },
             billingMode: dynamodb.BillingMode.PROVISIONED,
+            deletionProtection: true,
             readCapacity: 1,
             writeCapacity: 1,
         });
