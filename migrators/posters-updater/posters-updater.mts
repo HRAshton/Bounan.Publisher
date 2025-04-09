@@ -10,11 +10,11 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { PublishedAnimeEntity } from '../../src/database/entities/published-anime-entity';
 import { editMessageMedia } from 'telegram-bot-api-lightweight-client';
 import { createTextForHeaderPost } from '../../src/utils/post-maker';
-import { getAnimeInfo } from '../../src/api-clients/shikimori/shikimori-client';
+import { getShikiAnimeInfo } from '../../src/api-clients/shikimori/shikimori-client';
 import { ShikiAnimeInfo } from '../../src/api-clients/shikimori/shiki-anime-info';
 import { Error } from 'telegram-bot-api-lightweight-client/src/types';
 
-const SKIP_COUNT = 80;
+const SKIP_COUNT = 0;
 
 const getPublishDetails = async (): Promise<PublishedAnimeEntity[]> => {
     const command = new ScanCommand({ TableName: config.value.database.tableName });
@@ -74,10 +74,10 @@ const main = async () => {
         const publishDetail = publishDetails[i];
 
         const malInfo = await getMalAnimeInfo(publishDetail.myAnimeListId);
-        const shikiAnimeInfo = await getAnimeInfo(publishDetail.myAnimeListId);
+        const shikiAnimeInfo = await getShikiAnimeInfo(publishDetail.myAnimeListId);
         console.log(`Processing ${i + 1} of ${publishDetails.length}: ${publishDetail.myAnimeListId} ${publishDetail.threadId} ${shikiAnimeInfo.russian}`);
 
-        const posterUrl = malInfo.main_picture.large;
+        const posterUrl = malInfo.main_picture.large.replace('.webp', '.jpg');
         await updatePoster(shikiAnimeInfo, publishDetail, posterUrl);
 
         const timeoutMs = 350;

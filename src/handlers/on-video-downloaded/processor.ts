@@ -1,5 +1,5 @@
 ﻿import { VideoDownloadedNotification } from './models';
-import { getAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
+import { getShikiAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { publishAnime, publishEpisode } from '../../api-clients/telegram/telegram-service';
 import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { setHeader } from './repository';
@@ -17,8 +17,12 @@ const createTopic = async (
     animeKey: AnimeKey,
 ): Promise<Pick<PublishedAnimeEntity, 'threadId' | 'episodes'>> => {
     console.log('The topic was not found in the database, adding');
+
+    // MAL sometimes provides posters as webp, but telegram doesn't support it. However, it supports jpg as well.
     const malAnimeInfo = await getMalAnimeInfo(animeKey.myAnimeListId);
-    const headerPublishingResult = await publishAnime(animeInfo, malAnimeInfo.main_picture.large, animeKey.dub);
+    const posterUrl = malAnimeInfo.main_picture.large.replace('.webp', '.jpg');
+
+    const headerPublishingResult = await publishAnime(animeInfo, posterUrl, animeKey.dub);
     console.log('Published anime with message: ', headerPublishingResult);
 
     await setHeader(animeKey, headerPublishingResult.threadId, headerPublishingResult.headerMessageInfo);
@@ -56,7 +60,7 @@ const tryProcessNewEpisode = async (publishingRequest: Required<VideoDownloadedN
             return;
         }
 
-        const animeInfo = await getAnimeInfo(publishedAnime.myAnimeListId);
+        const animeInfo = await getShikiAnimeInfo(publishedAnime.myAnimeListId);
         console.log('Got anime info');
 
         const { threadId, episodes } = 'threadId' in publishedAnime

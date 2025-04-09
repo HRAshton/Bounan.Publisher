@@ -2,7 +2,7 @@
 
 export const SHIKIMORI_BASE_URL = 'https://shikimori.one';
 
-export const getAnimeInfo = async (myAnimeListId: number): Promise<ShikiAnimeInfo> => {
+export const getShikiAnimeInfo = async (myAnimeListId: number): Promise<ShikiAnimeInfo> => {
     return await fetch(
         `${SHIKIMORI_BASE_URL}/api/animes/${myAnimeListId}`,
         {

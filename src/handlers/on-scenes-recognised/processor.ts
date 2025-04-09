@@ -1,5 +1,5 @@
 ﻿import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from './models';
-import { getAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
+import { getShikiAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { updateEpisodeMessages } from '../../api-clients/telegram/telegram-service';
 import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { EpisodeMessageInfoEntity } from '../../database/entities/episode-message-info-entity';
@@ -16,7 +16,7 @@ const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]
             return;
         }
 
-        const animeInfo = await getAnimeInfo(publishedAnime.myAnimeListId);
+        const animeInfo = await getShikiAnimeInfo(publishedAnime.myAnimeListId);
         console.log('Anime info retrieved');
 
         const newCaptions = notificationItems.map(item => ({
