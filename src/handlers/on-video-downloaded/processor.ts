@@ -10,13 +10,15 @@ import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { ShikiAnimeInfo } from '../../api-clients/shikimori/shiki-anime-info';
 import { AnimeKey } from '../../models/anime-key';
 import { updatePublishingDetails } from '../../api-clients/animan/animan-client';
+import { getMalAnimeInfo } from '../../api-clients/my-anime-list/mal-client';
 
 const createTopic = async (
     animeInfo: ShikiAnimeInfo,
     animeKey: AnimeKey,
 ): Promise<Pick<PublishedAnimeEntity, 'threadId' | 'episodes'>> => {
     console.log('The topic was not found in the database, adding');
-    const headerPublishingResult = await publishAnime(animeInfo, animeKey.dub);
+    const malAnimeInfo = await getMalAnimeInfo(animeKey.myAnimeListId);
+    const headerPublishingResult = await publishAnime(animeInfo, malAnimeInfo.main_picture.large, animeKey.dub);
     console.log('Published anime with message: ', headerPublishingResult);
 
     await setHeader(animeKey, headerPublishingResult.threadId, headerPublishingResult.headerMessageInfo);

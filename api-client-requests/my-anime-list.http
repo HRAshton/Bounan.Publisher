@@ -1,0 +1,2 @@
+GET https://api.myanimelist.net/v2/anime/33?fields=main_picture
+X-MAL-CLIENT-ID: {{mal_token}}

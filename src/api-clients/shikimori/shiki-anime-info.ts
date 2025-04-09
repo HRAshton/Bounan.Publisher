@@ -2,7 +2,6 @@
     id: number;
     name: string;
     url: string;
-    image: { original: string; };
 
     russian?: string;
     english?: string[];

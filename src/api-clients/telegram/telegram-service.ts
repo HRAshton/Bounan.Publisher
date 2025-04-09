@@ -80,7 +80,11 @@ const sendSingleEpisodeInternal = async (
     };
 }
 
-export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Promise<PublishingResult> => {
+export const publishAnime = async (
+    animeInfo: ShikiAnimeInfo,
+    posterUrl: string,
+    dub: string,
+): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
         chat_id: config.value.telegram.targetGroupId,
         name: createTextForTopicName(animeInfo, dub),
@@ -95,7 +99,7 @@ export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Prom
     const firstPostText = createTextForHeaderPost(animeInfo, dub).substring(0, 1024);
     const firstPost = await sendPhoto({
         chat_id: config.value.telegram.targetGroupId,
-        photo: SHIKIMORI_BASE_URL + animeInfo.image.original,
+        photo: posterUrl,
         caption: firstPostText,
         message_thread_id: threadId,
         parse_mode: 'HTML',
@@ -141,7 +145,7 @@ export const updateEpisodeMessages = async (
         if (captionsToUpdate.length > 20) {
             await new Promise(resolve => setTimeout(resolve, 1000 / 29));
         }
-        
+
         console.log('Updating caption: ', captionToUpdate);
         const episode = publishedAnime.episodes[captionToUpdate.episode];
         console.log('Episode: ', episode);

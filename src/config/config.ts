@@ -4,6 +4,10 @@ interface AniManConfig {
     updatePublishingDetailsFunctionName: string;
 }
 
+interface MalApiConfig {
+    token: string;
+}
+
 interface TelegramConfig {
     token: string;
     sourceChannelId: string;
@@ -21,6 +25,7 @@ interface RetriesConfig {
 
 export interface Config {
     animan: AniManConfig;
+    malApiConfig: MalApiConfig;
     telegram: TelegramConfig;
     database: DatabaseConfig;
     retries: RetriesConfig;
