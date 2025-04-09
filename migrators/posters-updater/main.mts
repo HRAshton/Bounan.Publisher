@@ -14,6 +14,8 @@ import { getAnimeInfo } from '../../src/api-clients/shikimori/shikimori-client';
 import { ShikiAnimeInfo } from '../../src/api-clients/shikimori/shiki-anime-info';
 import { Error } from 'telegram-bot-api-lightweight-client/src/types';
 
+const SKIP_COUNT = 80;
+
 const getPublishDetails = async (): Promise<PublishedAnimeEntity[]> => {
     const command = new ScanCommand({ TableName: config.value.database.tableName });
     const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient());
@@ -68,7 +70,7 @@ const main = async () => {
     client_setClientToken(config.value.telegram.token);
 
     const publishDetails = await getPublishDetails();
-    for (let i = 0; i < publishDetails.length; i++) {
+    for (let i = SKIP_COUNT; i < publishDetails.length; i++) {
         const publishDetail = publishDetails[i];
 
         const malInfo = await getMalAnimeInfo(publishDetail.myAnimeListId);
