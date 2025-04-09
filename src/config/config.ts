@@ -1,21 +1,29 @@
 ﻿import { fetchSsmValue } from '../common/ts/runtime/ssm-client';
 
+interface AniManConfig {
+    updatePublishingDetailsFunctionName: string;
+}
+
+interface TelegramConfig {
+    token: string;
+    sourceChannelId: string;
+    targetGroupId: string;
+}
+
+interface DatabaseConfig {
+    tableName: string;
+}
+
+interface RetriesConfig {
+    max: number;
+    delayMs: number;
+}
+
 export interface Config {
-    animan: {
-        updatePublishingDetailsFunctionName: string;
-    };
-    telegram: {
-        token: string;
-        sourceChannelId: string;
-        targetGroupId: string;
-    };
-    database: {
-        tableName: string;
-    };
-    retries: {
-        max: number;
-        delayMs: number;
-    };
+    animan: AniManConfig;
+    telegram: TelegramConfig;
+    database: DatabaseConfig;
+    retries: RetriesConfig;
 }
 
 let cachedConfig: Config | undefined;
