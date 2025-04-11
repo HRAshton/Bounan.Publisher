@@ -2,6 +2,8 @@
 import { secToTime } from './sec-to-time';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
 import { KeysToCamelCase } from './object-transformer';
+import { MalAnimeInfo } from '../api-clients/jikan-moe/mal-anime-info';
+import { SHIKIMORI_BASE_URL } from '../api-clients/shikimori/shikimori-client';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
@@ -71,4 +73,10 @@ export const createTextForEpisodePost = (
     ]
         .filter(Boolean)
         .join('\n');
+}
+
+export const getPosterImageUrl = (shikiAnimeInfo: ShikiAnimeInfo, malAnimeInfo: MalAnimeInfo): string => {
+    return malAnimeInfo.images?.jpg?.large_image_url
+        || malAnimeInfo.images?.jpg?.image_url
+        || SHIKIMORI_BASE_URL + shikiAnimeInfo.image.original;
 }

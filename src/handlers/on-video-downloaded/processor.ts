@@ -10,19 +10,20 @@ import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { ShikiAnimeInfo } from '../../api-clients/shikimori/shiki-anime-info';
 import { AnimeKey } from '../../models/anime-key';
 import { updatePublishingDetails } from '../../api-clients/animan/animan-client';
-import { getMalAnimeInfo } from '../../api-clients/my-anime-list/mal-client';
+import { getMalAnimeInfo } from '../../api-clients/jikan-moe/jikan-client';
+import { getPosterImageUrl } from '../../utils/post-maker';
 
 const createTopic = async (
-    animeInfo: ShikiAnimeInfo,
+    shikiAnimeInfo: ShikiAnimeInfo,
     animeKey: AnimeKey,
 ): Promise<Pick<PublishedAnimeEntity, 'threadId' | 'episodes'>> => {
     console.log('The topic was not found in the database, adding');
 
     // MAL sometimes provides posters as webp, but telegram doesn't support it. However, it supports jpg as well.
     const malAnimeInfo = await getMalAnimeInfo(animeKey.myAnimeListId);
-    const posterUrl = malAnimeInfo.main_picture.large.replace('.webp', '.jpg');
+    const posterUrl = getPosterImageUrl(shikiAnimeInfo, malAnimeInfo);
 
-    const headerPublishingResult = await publishAnime(animeInfo, posterUrl, animeKey.dub);
+    const headerPublishingResult = await publishAnime(shikiAnimeInfo, posterUrl, animeKey.dub);
     console.log('Published anime with message: ', headerPublishingResult);
 
     await setHeader(animeKey, headerPublishingResult.threadId, headerPublishingResult.headerMessageInfo);

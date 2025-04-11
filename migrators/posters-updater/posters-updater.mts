@@ -3,16 +3,16 @@
  */
 
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
-import { getMalAnimeInfo } from '../../src/api-clients/my-anime-list/mal-client';
 import { config, initConfig } from '../../src/config/config';
 import { client_setClientToken } from 'telegram-bot-api-lightweight-client';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { PublishedAnimeEntity } from '../../src/database/entities/published-anime-entity';
 import { editMessageMedia } from 'telegram-bot-api-lightweight-client';
-import { createTextForHeaderPost } from '../../src/utils/post-maker';
+import { createTextForHeaderPost, getPosterImageUrl } from '../../src/utils/post-maker';
 import { getShikiAnimeInfo } from '../../src/api-clients/shikimori/shikimori-client';
 import { ShikiAnimeInfo } from '../../src/api-clients/shikimori/shiki-anime-info';
 import { Error } from 'telegram-bot-api-lightweight-client/src/types';
+import { getMalAnimeInfo } from '../../src/api-clients/jikan-moe/jikan-client';
 
 const SKIP_COUNT = 0;
 
@@ -77,7 +77,7 @@ const main = async () => {
         const shikiAnimeInfo = await getShikiAnimeInfo(publishDetail.myAnimeListId);
         console.log(`Processing ${i + 1} of ${publishDetails.length}: ${publishDetail.myAnimeListId} ${publishDetail.threadId} ${shikiAnimeInfo.russian}`);
 
-        const posterUrl = malInfo.main_picture.large.replace('.webp', '.jpg');
+        const posterUrl = getPosterImageUrl(shikiAnimeInfo, malInfo);
         await updatePoster(shikiAnimeInfo, publishDetail, posterUrl);
 
         const timeoutMs = 350;
