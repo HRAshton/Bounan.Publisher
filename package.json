@@ -32,6 +32,7 @@
         "depcheck": "^1.4.7",
         "eslint": "^9.24.0",
         "jiti": "^2.4.2",
+        "shikimori-graphql-api-lightweight-client": "^1.0.1",
         "telegram-bot-api-lightweight-client": "^9.0.0",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.29.1"

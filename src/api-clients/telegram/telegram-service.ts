@@ -4,7 +4,7 @@ import { hashCode } from '../../utils/hash';
 import { PublishingResult } from './models/publishing-result';
 import { EpisodeMessageInfo } from './models/message-info';
 import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../../utils/post-maker';
-import { ShikiAnimeInfo } from '../shikimori/shiki-anime-info';
+import { ShikiAnimeInfo } from '../shikimori/shikimori-client';
 import {
     createForumTopic,
     copyMessages,
@@ -79,11 +79,7 @@ const sendSingleEpisodeInternal = async (
     };
 }
 
-export const publishAnime = async (
-    animeInfo: ShikiAnimeInfo,
-    posterUrl: string,
-    dub: string,
-): Promise<PublishingResult> => {
+export const publishAnime = async (animeInfo: ShikiAnimeInfo, dub: string): Promise<PublishingResult> => {
     const createdTopic = await createForumTopic({
         chat_id: config.value.telegram.targetGroupId,
         name: createTextForTopicName(animeInfo, dub),
@@ -98,7 +94,7 @@ export const publishAnime = async (
     const firstPostText = createTextForHeaderPost(animeInfo, dub).substring(0, 1024);
     const firstPost = await sendPhoto({
         chat_id: config.value.telegram.targetGroupId,
-        photo: posterUrl,
+        photo: animeInfo.poster!.originalUrl,
         caption: firstPostText,
         message_thread_id: threadId,
         parse_mode: 'HTML',

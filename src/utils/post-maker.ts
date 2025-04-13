@@ -1,9 +1,7 @@
-﻿import { ShikiAnimeInfo } from '../api-clients/shikimori/shiki-anime-info';
-import { secToTime } from './sec-to-time';
+﻿import { secToTime } from './sec-to-time';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
 import { KeysToCamelCase } from './object-transformer';
-import { MalAnimeInfo } from '../api-clients/jikan-moe/mal-anime-info';
-import { SHIKIMORI_BASE_URL } from '../api-clients/shikimori/shikimori-client';
+import { ShikiAnimeInfo } from '../api-clients/shikimori/shikimori-client';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');
@@ -13,7 +11,7 @@ export const createTextForTopicName = (animeInfo: ShikiAnimeInfo, dub: string): 
     return [
         animeInfo.russian || animeInfo.name,
         dub,
-        animeInfo.aired_on?.substring(0, 4),
+        animeInfo.airedOn?.year,
     ]
         .filter(Boolean)
         .join(' | ');
@@ -23,17 +21,15 @@ export const createTextForHeaderPost = (animeInfo: ShikiAnimeInfo, dub: string):
     const genres = animeInfo.genres
         ?.map(genre => genre.russian)
         .filter(genre => genre)
-        .map(genre => `#${genre.replace(/ /g, '_')}`)
+        .map(genre => `#${genre!.replace(/ /g, '_')}`)
         .sort()
         .join(' ');
 
-    const allNamesSet = new Set([animeInfo.name, animeInfo.license_name_ru]);
-    animeInfo.english?.forEach(name => allNamesSet.add(name));
+    const allNamesSet = new Set([animeInfo.name, animeInfo.licenseNameRu, animeInfo.english]);
     animeInfo.synonyms?.forEach(name => allNamesSet.add(name));
     const otherNames = Array.from(allNamesSet)
         .filter(name => !!name)
         .map(name => name!.replaceAll('>', '&gt;').replaceAll('<', '&lt;'))
-        .sort()
         .join('; ');
 
     const hashtag = animeInfo.url
@@ -43,7 +39,7 @@ export const createTextForHeaderPost = (animeInfo: ShikiAnimeInfo, dub: string):
     return [
         `<b>${animeInfo.russian || animeInfo.name}</b>`,
         dub && `В озвучке ${escapeLinks(dub)}`,
-        animeInfo.aired_on && `Год выпуска: ${animeInfo.aired_on.substring(0, 4)}`,
+        animeInfo.airedOn && `Год выпуска: ${animeInfo.airedOn.year}`,
         genres && `Жанры: ${genres}`,
         animeInfo.franchise && `Франшиза: #${animeInfo.franchise}`,
         `Другие озвучки: #header_${hashtag}`,
@@ -59,7 +55,7 @@ export const createTextForEpisodePost = (
     publishingRequest: KeysToCamelCase<SceneRecognisedNotificationItem>,
 ): string => {
     const has_episodes = animeInfo.episodes && animeInfo.episodes > 1
-        || animeInfo.episodes_aired && animeInfo.episodes_aired > 1;
+        || animeInfo.episodesAired && animeInfo.episodesAired > 1;
 
     return [
         `<b>${animeInfo.russian || animeInfo.name}</b> ${publishingRequest.videoKey.dub && `(${escapeLinks(publishingRequest.videoKey.dub)})`}`,
@@ -73,10 +69,4 @@ export const createTextForEpisodePost = (
     ]
         .filter(Boolean)
         .join('\n');
-}
-
-export const getPosterImageUrl = (shikiAnimeInfo: ShikiAnimeInfo, malAnimeInfo: MalAnimeInfo): string => {
-    return malAnimeInfo.images?.jpg?.large_image_url
-        || malAnimeInfo.images?.jpg?.image_url
-        || SHIKIMORI_BASE_URL + shikiAnimeInfo.image.original;
 }
