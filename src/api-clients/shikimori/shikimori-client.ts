@@ -1,4 +1,4 @@
-﻿import { animes, Maybe } from 'shikimori-graphql-api-lightweight-client';
+﻿import { animes, Maybe } from '@lightweight-clients/shikimori-graphql-api-lightweight-client';
 
 export type ShikiAnimeInfo = {
     id: string;
