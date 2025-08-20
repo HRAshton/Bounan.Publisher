@@ -1,9 +1,9 @@
 ﻿/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { handler as videoHandler } from './handlers/on-video-downloaded/handler';
-import { handler as scenesHandler } from './handlers/on-scenes-recognised/handler';
 import { SceneRecognisedNotification, VideoDownloadedNotification } from './common/ts/interfaces';
+import { handler as scenesHandler } from './handlers/on-scenes-recognised/handler';
+import { handler as videoHandler } from './handlers/on-video-downloaded/handler';
 
 const ep = async (message: VideoDownloadedNotification) => {
     console.log('Processing message: ', message);

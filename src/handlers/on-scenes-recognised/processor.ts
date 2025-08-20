@@ -1,10 +1,10 @@
-﻿import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from './models';
-import { getShikiAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
+﻿import { getShikiAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { updateEpisodeMessages } from '../../api-clients/telegram/telegram-service';
-import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { EpisodeMessageInfoEntity } from '../../database/entities/episode-message-info-entity';
+import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { hashCode } from '../../utils/hash';
 import { createTextForEpisodePost } from '../../utils/post-maker';
+import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from './models';
 
 const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]): Promise<void> => {
     const publishedAnime = await getOrRegisterAnimeAndLock(notificationItems[0].videoKey);

@@ -1,8 +1,9 @@
-﻿import { AnimeKey } from '../../models/anime-key';
-import { HeaderMessageInfoEntity } from '../../database/entities/header-message-info-entity';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+﻿import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+
 import { config } from '../../config/config';
+import { HeaderMessageInfoEntity } from '../../database/entities/header-message-info-entity';
 import { docClient, getTableKey } from '../../database/repository';
+import { AnimeKey } from '../../models/anime-key';
 
 export const setHeader = async (
     anime: AnimeKey,

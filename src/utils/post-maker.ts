@@ -1,7 +1,7 @@
-﻿import { secToTime } from './sec-to-time';
+﻿import { ShikiAnimeInfo } from '../api-clients/shikimori/shikimori-client';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
 import { KeysToCamelCase } from './object-transformer';
-import { ShikiAnimeInfo } from '../api-clients/shikimori/shikimori-client';
+import { secToTime } from './sec-to-time';
 
 const escapeLinks = (text: string): string => {
     return text.replaceAll('.', '');

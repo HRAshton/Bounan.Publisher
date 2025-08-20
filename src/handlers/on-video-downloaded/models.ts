@@ -1,5 +1,5 @@
-﻿import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
-import { VideoDownloadedNotification as RawVideoDownloadedNotification } from '../../common/ts/interfaces';
+﻿import { VideoDownloadedNotification as RawVideoDownloadedNotification } from '../../common/ts/interfaces';
+import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
 
 export type VideoDownloadedNotification = KeysToCamelCase<RawVideoDownloadedNotification>;
 

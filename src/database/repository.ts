@@ -1,10 +1,11 @@
-﻿import { AnimeKey } from '../models/anime-key';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+﻿import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { PublishedAnimeEntity, RegisteredAnimeEntity } from './entities/published-anime-entity';
+
 import { config } from '../config/config';
-import { EpisodeMessageInfoEntity } from './entities/episode-message-info-entity';
 import { AnimeLockedError } from '../errors/anime-locked-error';
+import { AnimeKey } from '../models/anime-key';
+import { EpisodeMessageInfoEntity } from './entities/episode-message-info-entity';
+import { PublishedAnimeEntity, RegisteredAnimeEntity } from './entities/published-anime-entity';
 
 const dynamoDbClient = new DynamoDBClient();
 export const docClient = DynamoDBDocumentClient.from(dynamoDbClient);

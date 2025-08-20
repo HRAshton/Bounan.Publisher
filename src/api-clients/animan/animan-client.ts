@@ -1,6 +1,7 @@
-﻿import { config } from '../../config/config';
+﻿import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+
 import { PublisherResultRequest, PublisherResultRequestItem } from '../../common/ts/interfaces';
-import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { config } from '../../config/config';
 import { AnimeKey } from '../../models/anime-key';
 
 const lambdaClient = new LambdaClient({});

@@ -1,5 +1,5 @@
-﻿import { HeaderMessageInfoEntity } from './header-message-info-entity';
-import { EpisodeMessageInfoEntity } from './episode-message-info-entity';
+﻿import { EpisodeMessageInfoEntity } from './episode-message-info-entity';
+import { HeaderMessageInfoEntity } from './header-message-info-entity';
 
 export interface RegisteredAnimeEntity {
     myAnimeListId: number;

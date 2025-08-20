@@ -1,14 +1,15 @@
-﻿import { VideoDownloadedNotification } from './models';
+﻿import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
+
+import { updatePublishingDetails } from '../../api-clients/animan/animan-client';
 import { getShikiAnimeInfo, ShikiAnimeInfo } from '../../api-clients/shikimori/shikimori-client';
 import { publishAnime, publishEpisode } from '../../api-clients/telegram/telegram-service';
-import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
-import { setHeader } from './repository';
-import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 import { config } from '../../config/config';
+import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
+import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { AnimeLockedError } from '../../errors/anime-locked-error';
-import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { AnimeKey } from '../../models/anime-key';
-import { updatePublishingDetails } from '../../api-clients/animan/animan-client';
+import { VideoDownloadedNotification } from './models';
+import { setHeader } from './repository';
 
 const createTopic = async (
     shikiAnimeInfo: ShikiAnimeInfo,

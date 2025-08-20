@@ -1,10 +1,10 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
 import {
     SceneRecognisedNotification as RawSceneRecognisedNotification,
     SceneRecognisedNotificationItem as RawSceneRecognisedNotificationItem,
 } from '../../common/ts/interfaces';
+import { KeysToCamelCase, toCamelCase } from '../../utils/object-transformer';
 
 export type SceneRecognisedNotification = KeysToCamelCase<RawSceneRecognisedNotification>;
 export type SceneRecognisedNotificationItem = KeysToCamelCase<RawSceneRecognisedNotificationItem>;

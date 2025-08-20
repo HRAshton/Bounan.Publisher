@@ -1,7 +1,8 @@
 ﻿import { client_setClientToken } from '@lightweight-clients/telegram-bot-api-lightweight-client';
+import { Context, SNSEvent } from 'aws-lambda';
+
 import { config, initConfig } from '../../config/config';
 import { fromJson } from './models';
-import { Context, SNSEvent } from 'aws-lambda';
 import { processScenes } from './processor';
 
 const processMessage = async (message: string): Promise<void> => {
