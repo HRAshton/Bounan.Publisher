@@ -1,14 +1,13 @@
 ﻿import { client_setClientToken } from '@lightweight-clients/telegram-bot-api-lightweight-client';
 import { Context, SNSEvent } from 'aws-lambda';
-
 import { config, initConfig } from '../../config/config';
-import { fromJson } from './models';
+import { VideoDownloadedNotification } from '../../common/ts/interfaces';
 import { processNewEpisode } from './processor';
 
 const processMessage = async (message: string): Promise<void> => {
     console.log('Processing message: ', message);
 
-    const publishingRequest = fromJson(message);
+    const publishingRequest: VideoDownloadedNotification = JSON.parse(message);
     await processNewEpisode(publishingRequest);
 
     console.log('Message processed');

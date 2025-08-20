@@ -28,7 +28,6 @@
         "aws-cdk-lib": "^2.212.0",
         "aws-lambda": "^1.0.7",
         "cdk-lambda-llrt": "^0.1.0",
-        "change-case": "^5.4.4",
         "constructs": "^10.4.2",
         "cross-env": "^10.0.0",
         "depcheck": "^1.4.7",

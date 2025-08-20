@@ -16,19 +16,19 @@ export const updatePublishingDetails = async (
         return;
     }
 
-    const publisherResultRequestItems: PublisherResultRequestItem[] = messageIds.map(item => ({
-        VideoKey: {
-            MyAnimeListId: animeKey.myAnimeListId,
-            Dub: animeKey.dub,
-            Episode: item.episode,
+    const items: PublisherResultRequestItem[] = messageIds.map(item => ({
+        videoKey: {
+            myAnimeListId: animeKey.myAnimeListId,
+            dub: animeKey.dub,
+            episode: item.episode,
         },
-        PublishingDetails: {
-            ThreadId: threadId,
-            MessageId: item.messageId,
+        publishingDetails: {
+            threadId: threadId,
+            messageId: item.messageId,
         },
     }));
 
-    const request: PublisherResultRequest = { Items: publisherResultRequestItems };
+    const request: PublisherResultRequest = { items };
     const message = JSON.stringify(request);
     console.log('Sending request: ', message);
 

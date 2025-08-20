@@ -1,6 +1,5 @@
 ﻿import { ShikiAnimeInfo } from '../api-clients/shikimori/shikimori-client';
 import { SceneRecognisedNotificationItem } from '../common/ts/interfaces';
-import { KeysToCamelCase } from './object-transformer';
 import { secToTime } from './sec-to-time';
 
 const escapeLinks = (text: string): string => {
@@ -52,7 +51,7 @@ export const createTextForHeaderPost = (animeInfo: ShikiAnimeInfo, dub: string):
 
 export const createTextForEpisodePost = (
     animeInfo: ShikiAnimeInfo,
-    publishingRequest: KeysToCamelCase<SceneRecognisedNotificationItem>,
+    publishingRequest: SceneRecognisedNotificationItem,
 ): string => {
     const has_episodes = animeInfo.episodes && animeInfo.episodes > 1
         || animeInfo.episodesAired && animeInfo.episodesAired > 1;

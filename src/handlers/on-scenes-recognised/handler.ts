@@ -1,14 +1,12 @@
 ﻿import { client_setClientToken } from '@lightweight-clients/telegram-bot-api-lightweight-client';
 import { Context, SNSEvent } from 'aws-lambda';
-
 import { config, initConfig } from '../../config/config';
-import { fromJson } from './models';
 import { processScenes } from './processor';
 
 const processMessage = async (message: string): Promise<void> => {
     console.log('Processing message: ', message);
 
-    const updatingRequest = fromJson(message);
+    const updatingRequest = JSON.parse(message);
     await processScenes(updatingRequest);
 
     console.log('Message processed');

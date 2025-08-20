@@ -4,7 +4,7 @@ import { EpisodeMessageInfoEntity } from '../../database/entities/episode-messag
 import { getOrRegisterAnimeAndLock, unlock, upsertEpisodes } from '../../database/repository';
 import { hashCode } from '../../utils/hash';
 import { createTextForEpisodePost } from '../../utils/post-maker';
-import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from './models';
+import { SceneRecognisedNotification, SceneRecognisedNotificationItem } from '../../common/ts/interfaces';
 
 const processAnime = async (notificationItems: SceneRecognisedNotificationItem[]): Promise<void> => {
     const publishedAnime = await getOrRegisterAnimeAndLock(notificationItems[0].videoKey);

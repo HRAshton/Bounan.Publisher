@@ -32,91 +32,91 @@ const main = async () => {
     const sourceChannelMessageId = 186;
 
     await ep({
-        VideoKey: {
-            MyAnimeListId: myAnimeListId,
-            Dub: 'AniLibria.TV',
-            Episode: 1,
+        videoKey: {
+            myAnimeListId: myAnimeListId,
+            dub: 'AniLibria.TV',
+            episode: 1,
         },
-        MessageId: sourceChannelMessageId,
-        Scenes: {
-            Opening: { Start: 90, End: 180 },
-            Ending: { Start: 300, End: 320 },
-            SceneAfterEnding: { Start: 320, End: 400 },
-        },
-    });
-
-    await ep({
-        VideoKey: {
-            MyAnimeListId: myAnimeListId,
-            Dub: 'AniLibria.TV',
-            Episode: 3,
-        },
-        MessageId: sourceChannelMessageId,
-        Scenes: {
-            Opening: { Start: 90, End: 180 },
-            Ending: { Start: 300, End: 320 },
+        messageId: sourceChannelMessageId,
+        scenes: {
+            opening: { start: 90, end: 180 },
+            ending: { start: 300, end: 320 },
+            sceneAfterEnding: { start: 320, end: 400 },
         },
     });
 
     await ep({
-        VideoKey: {
-            MyAnimeListId: myAnimeListId,
-            Dub: 'AniLibria.TV',
-            Episode: 4,
+        videoKey: {
+            myAnimeListId: myAnimeListId,
+            dub: 'AniLibria.TV',
+            episode: 3,
         },
-        MessageId: sourceChannelMessageId,
-    });
-
-    await ep({
-        VideoKey: {
-            MyAnimeListId: myAnimeListId,
-            Dub: 'AniLibria.TV',
-            Episode: 2,
-        },
-        MessageId: sourceChannelMessageId,
-        Scenes: {
-            Ending: { Start: 300, End: 320 },
-            SceneAfterEnding: { Start: 320, End: 400 },
+        messageId: sourceChannelMessageId,
+        scenes: {
+            opening: { start: 90, end: 180 },
+            ending: { start: 300, end: 320 },
         },
     });
 
     await ep({
-        VideoKey: {
-            MyAnimeListId: myAnimeListId,
-            Dub: 'AniLibria.TV',
-            Episode: 1,
+        videoKey: {
+            myAnimeListId: myAnimeListId,
+            dub: 'AniLibria.TV',
+            episode: 4,
         },
-        MessageId: sourceChannelMessageId,
-        Scenes: {
-            Ending: { Start: 300, End: 320 },
-            SceneAfterEnding: { Start: 320, End: 400 },
+        messageId: sourceChannelMessageId,
+    });
+
+    await ep({
+        videoKey: {
+            myAnimeListId: myAnimeListId,
+            dub: 'AniLibria.TV',
+            episode: 2,
+        },
+        messageId: sourceChannelMessageId,
+        scenes: {
+            ending: { start: 300, end: 320 },
+            sceneAfterEnding: { start: 320, end: 400 },
+        },
+    });
+
+    await ep({
+        videoKey: {
+            myAnimeListId: myAnimeListId,
+            dub: 'AniLibria.TV',
+            episode: 1,
+        },
+        messageId: sourceChannelMessageId,
+        scenes: {
+            ending: { start: 300, end: 320 },
+            sceneAfterEnding: { start: 320, end: 400 },
         },
     });
 
     await sc({
-        Items: [
+        items: [
             {
-                VideoKey: {
-                    MyAnimeListId: myAnimeListId,
-                    Dub: 'AniLibria.TV',
-                    Episode: 1,
+                videoKey: {
+                    myAnimeListId: myAnimeListId,
+                    dub: 'AniLibria.TV',
+                    episode: 1,
                 },
-                Scenes: {
-                    Opening: { Start: 0, End: 50 },
-                    Ending: { Start: 300, End: 320 },
-                    SceneAfterEnding: { Start: 320, End: 400 },
+                scenes: {
+                    opening: { start: 0, end: 50 },
+                    ending: { start: 300, end: 320 },
+                    sceneAfterEnding: { start: 320, end: 400 },
                 },
             },
             {
-                VideoKey: {
-                    MyAnimeListId: myAnimeListId,
-                    Dub: 'AniLibria.TV',
-                    Episode: 2,
+                videoKey: {
+                    myAnimeListId: myAnimeListId,
+                    dub: 'AniLibria.TV',
+                    episode: 2,
                 },
-                Scenes: {
-                    Opening: { Start: 0, End: 50 },
-                    Ending: { Start: 1, End: 320 },
-                    SceneAfterEnding: { Start: 20, End: 400 },
+                scenes: {
+                    opening: { start: 0, end: 50 },
+                    ending: { start: 1, end: 320 },
+                    sceneAfterEnding: { start: 20, end: 400 },
                 },
             },
         ],
