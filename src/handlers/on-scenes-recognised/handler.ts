@@ -1,5 +1,6 @@
 ﻿import { client_setClientToken } from '@lightweight-clients/telegram-bot-api-lightweight-client';
 import { Context, SNSEvent } from 'aws-lambda';
+
 import { config, initConfig } from '../../config/config';
 import { processScenes } from './processor';
 

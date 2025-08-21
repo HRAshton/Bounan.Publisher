@@ -1,10 +1,4 @@
-﻿import { config } from '../../config/config';
-import { hashCode } from '../../utils/hash';
-import { PublishingResult } from './models/publishing-result';
-import { EpisodeMessageInfo } from './models/message-info';
-import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../../utils/post-maker';
-import { ShikiAnimeInfo } from '../shikimori/shikimori-client';
-import {
+﻿import {
     copyMessage,
     copyMessages,
     createForumTopic,
@@ -13,8 +7,14 @@ import {
     sendPhoto,
 } from '@lightweight-clients/telegram-bot-api-lightweight-client';
 
-import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
 import { VideoDownloadedNotification } from '../../common/ts/interfaces';
+import { config } from '../../config/config';
+import { PublishedAnimeEntity } from '../../database/entities/published-anime-entity';
+import { hashCode } from '../../utils/hash';
+import { createTextForEpisodePost, createTextForHeaderPost, createTextForTopicName } from '../../utils/post-maker';
+import { ShikiAnimeInfo } from '../shikimori/shikimori-client';
+import { EpisodeMessageInfo } from './models/message-info';
+import { PublishingResult } from './models/publishing-result';
 
 const reorderEpisodes = async (
     threadId: number,
